@@ -1,0 +1,26 @@
+{
+  "name": "cvar1984/madeline",
+  "description": "telegram bot",
+  "type": "application",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Cvar1984",
+      "email": "gedzsarjuncomuniti@gmail.com"
+    }
+  ],
+  "require": {
+    "ext-curl": "*",
+    "ext-mbstring": "*",
+    "ext-gd" : "*",
+    "danog/madelineproto": "^5.1",
+    "bhsec/simpleimage": "dev-master",
+    "mdwheele/fortune": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "Cvar1984\\": "src/"
+    }
+  }
+}
