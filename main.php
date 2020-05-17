@@ -124,9 +124,7 @@ class Mybot extends EventHandler
                     $num++;
                     usleep($temposleep);
                 }
-            }
-
-            if (preg_match('/^\/loop/i', $message)) {
+            } elseif (preg_match('/^\/loop/i', $message)) {
                 preg_match('/"\s(.*\d)/', $message, $match) ? $count = $match[1] : $count = 1;
                 preg_match('/^\/loop\s"(.*)"/i', $message, $match) ? $text = $match[1] : $text = 'Can\'t parse argument';
 
@@ -150,8 +148,7 @@ class Mybot extends EventHandler
                         ),
                     ]
                 );
-            }
-            if (preg_match('/^\/upfile/i', $message)) {
+            } else if (preg_match('/^\/upfile/i', $message)) {
                 preg_match('/\s"(.+)"/', $message, $match) ? $file = $match[1] : $file = $this->storage . '/default.jpg';
 
                 yield $this->messages->sendMedia(
