@@ -22,14 +22,13 @@ class Mybot extends EventHandler
         $peer    = $update;
 
         if (preg_match('/^\/urban/i', $message)) {
-            $rapid = new RapidApi();
-
             if (preg_match('/\s"(.+)"/i', $message, $match)) $query = $match[1];
-            $data = yield $rapid->urban($query);
+            $data = yield RapidApi::urban($query);
             $data = $data->list[0];
-            $text = "*definition*: `$data->definition`\n"
-                . "*permalink*: `$data->permalink`";
-
+            $text = <<< MD
+**definition:** *{$data->definition}*
+**permalink:** `{$data->permalink}`
+MD;
             yield $this->messages->sendMessage(
                 [
                     'peer' => $peer,
