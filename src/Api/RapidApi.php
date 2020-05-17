@@ -1,10 +1,10 @@
 <?php
-
+// when you lazy enough
 namespace Cvar1984\Api;
 
 class RapidApi
 {
-    public function urban($word)
+    public static function urban($word)
     {
         $curl = curl_init();
 
