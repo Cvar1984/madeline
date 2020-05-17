@@ -3,6 +3,10 @@
 require './vendor/autoload.php';
 
 use danog\MadelineProto\EventHandler;
+use Wheeler\Fortune\Fortune;
+use danog\MadelineProto\API;
+use Bhsec\SimpleImage\Gambar;
+use Cvar1984\Api\RapidApi;
 
 class Mybot extends EventHandler
 {
@@ -14,11 +18,11 @@ class Mybot extends EventHandler
         if (empty($update['message']['message'])) return;
         $message = $update['message']['message'];
         $chat_id = $update['message']['id'];
-        $from_id = $update['message']['from_id'];
+        $from_id = @$update['message']['from_id'];
         $peer    = $update;
 
         if (preg_match('/^\/urban/i', $message)) {
-            $rapid = new \Cvar1984\Api\RapidApi();
+            $rapid = new RapidApi();
 
             if (preg_match('/\s"(.+)"/i', $message, $match)) $query = $match[1];
             $data = yield $rapid->urban($query);
@@ -35,9 +39,9 @@ class Mybot extends EventHandler
                 ]
             );
         } elseif (preg_match('/^\/simpleimage/i', $message)) {
-            preg_match('/\s"(.+)"/i', $message, $match) ? $text = $match[1] : $text = \Wheeler\Fortune\Fortune::make();
+            preg_match('/\s"(.+)"/i', $message, $match) ? $text = $match[1] : $text = Fortune::make();
 
-            yield $simpleimage = new \Bhsec\SimpleImage\Gambar($text, 'dark');
+            yield $simpleimage = new Gambar($text, 'dark');
             $text = yield $simpleimage
                 ->getResult($this->storage . '/result.jpg', 'image/jpeg', 100);
             yield $this->messages->sendMedia(
@@ -52,7 +56,7 @@ class Mybot extends EventHandler
                 ]
             );
         } elseif (preg_match('/^\/fortune/i', $message)) {
-            $text = \Wheeler\Fortune\Fortune::make();
+            $text = Fortune::make();
             yield $this->messages->sendMessage(
                 [
                     'peer' => $peer,
@@ -64,7 +68,7 @@ class Mybot extends EventHandler
         } elseif (@$from_id == $this->adminId) {
             // admin commmand
             if (preg_match('/^\/animate/', $message)) {
-                preg_match('/\s"(.+)"/i', $message, $match) ? $text = $match[1] : $text = \Wheeler\Fortune\Fortune::make();
+                preg_match('/\s"(.+)"/i', $message, $match) ? $text = $match[1] : $text = Fortune::make();
 
                 $temposleep = 300000;
                 $oldtext = "";
@@ -187,5 +191,5 @@ $settings = [
     ]
 ];
 
-$MadelineProto = new \danog\MadelineProto\API('session.madeline', $settings);
+$MadelineProto = new API('session.madeline', $settings);
 $MadelineProto->startAndLoop(MyBot::class);
