@@ -41,9 +41,9 @@ MD;
                     'message' => $text,
                 ]);
             } catch (\danog\MadelineProto\Exception | \Exception $e) {
-                yield $this->messages->editMessage([
+                yield $this->messages->sendMessage([
                     'peer' => $peer,
-                    'id' => $chat_id,
+                    'reply_to_msg_id' => $chat_id,
                     'message' => $e->getMessage(),
                 ]);
             }
@@ -83,7 +83,7 @@ MD;
                     : ($text = Fortune::make());
 
                 $temposleep = 300000;
-                $oldtext = "";
+                $oldtext = '';
                 $num = 1;
                 $this->messages->editMessage([
                     'no_webpage' => true,
@@ -136,21 +136,30 @@ MD;
                 }
             } elseif (preg_match('/^\/loop/i', $message)) {
                 try {
-                    if (preg_match('/"\s(.*\d)/', $message, $match)) {
-                        $count = $match[1];
-                    }
-                    if (preg_match('/^\/loop\s"(.*)"/i', $message, $match)) {
-                        $text = $match[1];
-                    }
+                    preg_match('/"\s(.*\d)/', $message, $match)
+                        ? ($count = $match[1])
+                        : ($count = 1);
+
+                    preg_match('/^\/loop\s"(.*)"/i', $message, $match)
+                        ? ($text = $match[1])
+                        : ($text = false);
 
                     for ($x = 0; $x < $count; $x++) {
+                        if ($text === false) {
+                            $buff = $text = Fortune::make();
+                        }
+
                         yield $this->messages->sendMessage([
                             'peer' => $peer,
                             'message' => $text,
                         ]);
+
+                        if (isset($buff) && $buff == $text) {
+                            $text = false;
+                        }
                     }
                 } catch (\danog\MadelineProto\Exception | Exception $e) {
-                    yield $this->messages->sendMessage([
+                    yield $this->messages->editMessage([
                         'peer' => $peer,
                         'id' => $chat_id,
                         'message' => $e->getMessage(),
@@ -167,18 +176,21 @@ MD;
                     ),
                 ]);
             } elseif (preg_match('/^\/upfile/i', $message)) {
-                if (preg_match('/\s"(.+)"/', $message, $match)) {
-                    $file = $match[1];
-                }
+                preg_match('/\s"(.+)"/', $message, $match)
+                    ? ($file = $match[1])
+                    : ($file = $this::STORAGE . '/default.jpg');
+
                 try {
                     yield $this->messages->sendMedia([
                         'peer' => $peer,
                         'reply_to_msg_id' => $chat_id,
+                        'parse_mode' => 'Markdown',
                         'media' => [
                             '_' => 'inputMediaUploadedDocument',
                             'file' => $file,
                         ],
-                        'message' => basename($file) . ' has been uploaded',
+                        'message' =>
+                            '*' . basename($file) . '* has been uploaded',
                     ]);
                 } catch (\danog\MadelineProto\Exception | Exception $e) {
                     yield $this->messages->editMessage([
