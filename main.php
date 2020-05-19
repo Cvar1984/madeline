@@ -2,16 +2,16 @@
 
 require './vendor/autoload.php';
 
-use danog\MadelineProto\EventHandler;
-use Wheeler\Fortune\Fortune;
 use danog\MadelineProto\API;
-use Bhsec\SimpleImage\Gambar;
+use danog\MadelineProto\EventHandler;
 use Cvar1984\Api\RapidApi;
+use Bhsec\SimpleImage\Gambar;
+use Wheeler\Fortune\Fortune;
 
 class Mybot extends EventHandler
 {
-    public $adminId = '905361440';
-    public $storage = './assets';
+    protected $adminId = '905361440';
+    public const STORAGE = './assets';
 
     public function onAny($update)
     {
@@ -23,33 +23,43 @@ class Mybot extends EventHandler
 
         if (preg_match('/^\/urban/i', $message)) {
             if (preg_match('/\s"(.+)"/i', $message, $match)) $query = $match[1];
-            $data = yield RapidApi::urban($query);
-            $data = $data->list[0];
-            $text = <<< MD
+            try {
+                $data = yield RapidApi::urban($query);
+                $data = $data->list[0];
+                $text = <<< MD
 **definition:** *{$data->definition}*
 **permalink:** `{$data->permalink}`
 MD;
-            yield $this->messages->sendMessage(
-                [
-                    'peer' => $peer,
-                    'reply_to_msg_id' => $chat_id,
-                    'parse_mode' => 'Markdown',
-                    'message' => $text
-                ]
-            );
+                yield $this->messages->sendMessage(
+                    [
+                        'peer' => $peer,
+                        'reply_to_msg_id' => $chat_id,
+                        'parse_mode' => 'Markdown',
+                        'message' => $text
+                    ]
+                );
+            } catch (\danog\MadelineProto\Exception | \Exception $e) {
+                yield $this->messages->editMessage(
+                    [
+                        'peer' => $peer,
+                        'id' => $chat_id,
+                        'message' => $e->getMessage()
+                    ]
+                );
+            }
         } elseif (preg_match('/^\/simpleimage/i', $message)) {
             preg_match('/\s"(.+)"/i', $message, $match) ? $text = $match[1] : $text = Fortune::make();
 
             yield $simpleimage = new Gambar($text, 'dark');
             $text = yield $simpleimage
-                ->getResult($this->storage . '/result.jpg', 'image/jpeg', 100);
+                ->getResult($this::STORAGE . '/result.jpg', 'image/jpeg', 100);
             yield $this->messages->sendMedia(
                 [
                     'peer' => $peer,
                     'reply_to_msg_id' => $chat_id,
                     'media' => [
                         '_' => 'inputMediaUploadedPhoto',
-                        'file' => $this->storage . '/result.jpg',
+                        'file' => $this::STORAGE . '/result.jpg',
                     ],
                     'message' => $text,
                 ]
@@ -128,14 +138,24 @@ MD;
                     usleep($temposleep);
                 }
             } elseif (preg_match('/^\/loop/i', $message)) {
-                preg_match('/"\s(.*\d)/', $message, $match) ? $count = $match[1] : $count = 1;
-                preg_match('/^\/loop\s"(.*)"/i', $message, $match) ? $text = $match[1] : $text = 'Can\'t parse argument';
+                try {
+                    if (preg_match('/"\s(.*\d)/', $message, $match)) $count = $match[1];
+                    if (preg_match('/^\/loop\s"(.*)"/i', $message, $match)) $text = $match[1];
 
-                for ($x = 0; $x < $count; $x++) {
+                    for ($x = 0; $x < $count; $x++) {
+                        yield $this->messages->sendMessage(
+                            [
+                                'peer' => $peer,
+                                'message' => $text,
+                            ]
+                        );
+                    }
+                } catch (\danog\MadelineProto\Exception | Exception $e) {
                     yield $this->messages->sendMessage(
                         [
                             'peer' => $peer,
-                            'message' => $text,
+                            'id' => $chat_id,
+                            'message' => $e->getMessage()
                         ]
                     );
                 }
@@ -152,19 +172,28 @@ MD;
                     ]
                 );
             } else if (preg_match('/^\/upfile/i', $message)) {
-                preg_match('/\s"(.+)"/', $message, $match) ? $file = $match[1] : $file = $this->storage . '/default.jpg';
-
-                yield $this->messages->sendMedia(
-                    [
-                        'peer' => $peer,
-                        'reply_to_msg_id' => $chat_id,
-                        'media' => [
-                            '_' => 'inputMediaUploadedDocument',
-                            'file' => $file,
-                        ],
-                        'message' => basename($file) . ' has been uploaded',
-                    ]
-                );
+                if (preg_match('/\s"(.+)"/', $message, $match)) $file = $match[1];
+                try {
+                    yield $this->messages->sendMedia(
+                        [
+                            'peer' => $peer,
+                            'reply_to_msg_id' => $chat_id,
+                            'media' => [
+                                '_' => 'inputMediaUploadedDocument',
+                                'file' => $file,
+                            ],
+                            'message' => basename($file) . ' has been uploaded',
+                        ]
+                    );
+                } catch (\danog\MadelineProto\Exception | Exception $e) {
+                    yield $this->messages->editMessage(
+                        [
+                            'peer' => $peer,
+                            'id' => $chat_id,
+                            'message' => $e->getMessage()
+                        ]
+                    );
+                }
             } elseif (preg_match('/^\/eval/i', $message)) {
                 try {
                     ob_start();
@@ -172,6 +201,7 @@ MD;
                     $text = ob_get_clean();
                 } catch (\danog\MadelineProto\Exception | \ParseError $e) {
                     $text = $e->getMessage();
+                    $this->logger($text);
                 }
                 yield $this->messages->editMessage(
                     [
@@ -180,13 +210,43 @@ MD;
                         'id' => $chat_id
                     ]
                 );
+            } elseif (preg_match('/^\/invite/i', $message)) {
+                try {
+                    $dialogs = yield $this->getDialogs();
+                    foreach ($dialogs as $dialog) {
+                        if (isset($dialog['user_id'])) $dialogId[] = $dialog['user_id'];
+                    }
+
+                    preg_match('/\s"(.+)"/i', $message, $match) ? $users = array($match[1]) : $users = $dialogId;
+
+                    yield $this->channels->inviteToChannel(
+                        [
+                            'channel' => '@BHSecFortune',
+                            'users' => $users
+                        ]
+                    );
+                } catch (\danog\MadelineProto\Exception | \Exception $e) {
+                    yield $this->messages->editMessage(
+                        [
+                            'peer' => $peer,
+                            'id' => $chat_id,
+                            'message' => $e->getMessage()
+                        ]
+                    );
+                }
             }
+            $this->logger($update);
         }
     }
 }
+
 $settings = [
     'logger' => [
-        'logger_level' => 0
+        'param' => MyBot::STORAGE . '/Madeline.log',
+        'logger_level' => 8
+    ],
+    'max_tries' => [
+        'query' => 1
     ]
 ];
 
