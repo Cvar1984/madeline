@@ -4,6 +4,9 @@ require './vendor/autoload.php';
 
 use danog\MadelineProto\API;
 use danog\MadelineProto\EventHandler;
+use danog\MadelineProto\Logger;
+use danog\MadelineProto\Tools;
+use danog\MadelineProto\RPCErrorException;
 use Cvar1984\Api\RapidApi;
 use Bhsec\SimpleImage\Gambar;
 use Wheeler\Fortune\Fortune;
@@ -12,7 +15,7 @@ class Mybot extends EventHandler
 {
     protected $adminId = '905361440';
     public const STORAGE = './assets';
-    // dont use yield outside any event handler method
+
     public function urban($query)
     {
         $data = RapidApi::urban($query);
@@ -21,7 +24,7 @@ class Mybot extends EventHandler
 **definition:** *{$data->definition}*
 **permalink:** `{$data->permalink}`
 MD;
-        $this->messages->sendMessage([
+        yield $this->messages->sendMessage([
             'peer' => $this->peer,
             'reply_to_msg_id' => $this->chatId,
             'parse_mode' => 'Markdown',
@@ -36,7 +39,7 @@ MD;
             'image/jpeg',
             100
         );
-        $this->messages->sendMedia([
+        yield $this->messages->sendMedia([
             'peer' => $this->peer,
             'reply_to_msg_id' => $this->chatId,
             'media' => [
@@ -49,7 +52,7 @@ MD;
     public function fortune()
     {
         $text = Fortune::make();
-        $this->messages->sendMessage([
+        yield $this->messages->sendMessage([
             'peer' => $this->peer,
             'reply_to_msg_id' => $this->chatId,
             'message' => '`' . $text . '`',
@@ -118,7 +121,7 @@ MD;
                 $buff = $text = Fortune::make();
             }
 
-            $this->messages->sendMessage([
+            yield $this->messages->sendMessage([
                 'peer' => $this->peer,
                 'message' => $text,
             ]);
@@ -130,7 +133,7 @@ MD;
     }
     public function upfile($file)
     {
-        $this->messages->sendMedia([
+        yield $this->messages->sendMedia([
             'peer' => $this->peer,
             'reply_to_msg_id' => $this->chatId,
             'parse_mode' => 'Markdown',
@@ -146,15 +149,16 @@ MD;
         ob_start();
         eval($text);
         $text = ob_get_clean();
-        $this->messages->editMessage([
+        yield $this->messages->editMessage([
             'peer' => $this->peer,
             'message' => $text,
             'id' => $this->chatId,
         ]);
     }
-    // you can use yield inside this method
-    public function onAny($update) // on any event
+    
+    public function onAny($update)
     {
+        // on any event
         if (empty($update['message']['message'])) {
             return;
         }
@@ -233,7 +237,7 @@ MD;
                     ]);
                 }
             }
-            $this->logger($update);
+            yield Logger::log($update, Logger::VERBOSE);
         }
     }
 }
@@ -241,7 +245,6 @@ MD;
 $settings = [
     'logger' => [
         'param' => MyBot::STORAGE . '/Madeline.log',
-        'logger_level' => 5,
     ],
     'max_tries' => [
         'query' => 1,
@@ -249,4 +252,5 @@ $settings = [
 ];
 
 $MadelineProto = new API('session.madeline', $settings);
+$MadelineProto->async(true); // async only work for builtin madeline method
 $MadelineProto->startAndLoop(MyBot::class);
