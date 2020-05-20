@@ -7,13 +7,40 @@ use danog\MadelineProto\EventHandler;
 use danog\MadelineProto\Logger;
 use danog\MadelineProto\Tools;
 use danog\MadelineProto\RPCErrorException;
+use danog\MadelineProto\Exception;
 use Cvar1984\Api\RapidApi;
 use Bhsec\SimpleImage\Gambar;
 use Wheeler\Fortune\Fortune;
+/**
+ * List of exception types
+ \danog\MadelineProto\Exception
+ - Default exception, thrown when a php error occures and in a lot of other cases
 
+ \danog\MadelineProto\RPCErrorException
+ - Thrown when an RPC error occurres (an error received via the MTProto API): note that the error message of this exception is localized in English, and may vary: to fetch the original API error message use $e->rpc.
+
+ \danog\MadelineProto\TL\Exception
+ - Thrown on TL serialization/deserialization errors
+
+ \danog\MadelineProto\ResponseException
+ - Thrown when an unexpected message is received through the socket
+
+ \danog\MadelineProto\NothingInTheSocketException
+ - Thrown if no data can be read/written on the TCP socket
+
+ \danog\MadelineProto\PTSException
+ - Thrown if the PTS is unrecoverably corrupted
+
+ \danog\MadelineProto\SecurityException
+ - Thrown on security problems (invalid params during generation of auth key or similar)
+
+ \danog\MadelineProto\TL\Conversion\Exception
+ - Thrown if some param/object can’t be converted to/from bot API/TD/TD-CLI format (this includes markdown/html parsing)
+ */
 class Mybot extends EventHandler
 {
-    protected $adminId = '905361440';
+    public const ADMIN_ID = '905361440';
+    public const ADMIN_PEER = 'Cvar1984';
     public const STORAGE = './assets';
 
     public function urban($query)
@@ -121,7 +148,7 @@ MD;
                 $buff = $text = Fortune::make();
             }
 
-            yield $this->messages->sendMessage([
+            $this->messages->sendMessage([
                 'peer' => $this->peer,
                 'message' => $text,
             ]);
@@ -173,12 +200,13 @@ MD;
                     $query = $match[1];
                 }
                 yield $this->urban($query);
-            } catch (\danog\MadelineProto\Exception | \Exception $e) {
+            } catch (Exception$e) {
                 yield $this->messages->sendMessage([
                     'peer' => $this->peer,
                     'reply_to_msg_id' => $this->chatId,
                     'message' => $e->getMessage(),
                 ]);
+                // yield $thiz->report($e);
             }
         } elseif (preg_match('/^\/simpleimage/i', $this->message)) {
             preg_match('/\s"(.+)"/i', $this->message, $match)
@@ -187,7 +215,7 @@ MD;
             yield $this->simpleImage($text);
         } elseif (preg_match('/^\/fortune/i', $this->message)) {
             yield $this->fortune();
-        } elseif (@$this->fromId == $this->adminId) {
+        } elseif (@$this->fromId == $this::ADMIN_ID) {
             // admin commmand
             if (preg_match('/^\/animate/', $this->message)) {
                 preg_match('/\s"(.+)"/i', $this->message, $match)
@@ -203,12 +231,13 @@ MD;
                         ? ($text = $match[1])
                         : ($text = false);
                     yield $this->loopCommand($text, $count);
-                } catch (\danog\MadelineProto\Exception | Exception $e) {
+                } catch (Exception $e) {
                     yield $this->messages->editMessage([
                         'peer' => $this->peer,
                         'id' => $this->chatId,
                         'message' => $e->getMessage(),
                     ]);
+                    // yield $this->report($e);
                 }
             } elseif (preg_match('/^\/upfile/i', $this->message)) {
                 try {
@@ -217,28 +246,34 @@ MD;
                         : ($file = $this::STORAGE . '/default.jpg');
 
                     yield $this->upfile($file);
-                } catch (\danog\MadelineProto\Exception | Exception $e) {
+                } catch (Exception | RPCErrorException $e) {
                     yield $this->messages->editMessage([
                         'peer' => $this->peer,
                         'id' => $this->chatId,
                         'message' => $e->getMessage(),
                     ]);
+                    //yield $this->report($e);
                 }
             } elseif (preg_match('/^\/eval/i', $this->message)) {
                 try {
                     $text = substr($this->message, 6);
                     yield $this->evalCommand($text);
-                } catch (\danog\MadelineProto\Exception | \ParseError $e) {
+                } catch (Exception|RPCErrorException|ParseError $e) {
                     $text = $e->getMessage();
                     yield $this->messages->editMessage([
                         'peer' => $this->peer,
                         'id' => $this->chatId,
                         'message' => $text,
                     ]);
+                    //yield $this->report($e);
                 }
             }
             yield Logger::log($update, Logger::VERBOSE);
         }
+    }
+    public function getReportPeers()
+    {
+        return [self::ADMIN_PEER];
     }
 }
 
