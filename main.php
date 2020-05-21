@@ -43,32 +43,39 @@ class Mybot extends EventHandler
     public const ADMIN_PEER = 'Cvar1984';
     public const STORAGE = './assets';
 
-    public function urban($query)
+    public function urban($opt)
     {
-        $data = RapidApi::urban($query);
+        $text = $opt['message'];
+        $peer = $opt['peer'];
+        $chatId = $opt['id'];
+        $data = RapidApi::urban($text);
         $data = $data->list[0];
         $text = <<<MD
 **definition:** *{$data->definition}*
 **permalink:** `{$data->permalink}`
 MD;
         yield $this->messages->sendMessage([
-            'peer' => $this->peer,
-            'reply_to_msg_id' => $this->chatId,
+            'peer' => $peer,
+            'reply_to_msg_id' => $chatId,
             'parse_mode' => 'Markdown',
             'message' => $text,
         ]);
     }
-    public function simpleImage($text)
+    public function simpleImage($opt)
     {
+        $text = $opt['message'];
+        $peer = $opt['peer'];
+        $chatId = $opt['id'];
         $images = new Gambar($text, 'dark');
         $text = $images->getResult(
             $this::STORAGE . '/result.jpg',
             'image/jpeg',
             100
         );
+
         yield $this->messages->sendMedia([
-            'peer' => $this->peer,
-            'reply_to_msg_id' => $this->chatId,
+            'peer' => $peer,
+            'reply_to_msg_id' => $chatId,
             'media' => [
                 '_' => 'inputMediaUploadedPhoto',
                 'file' => $this::STORAGE . '/result.jpg',
@@ -76,21 +83,28 @@ MD;
             'message' => $text,
         ]);
     }
-    public function fortune()
+    public function fortune($opt)
     {
+        $peer = $opt['peer'];
+        $chatId = $opt['id'];
         $text = Fortune::make();
+
         yield $this->messages->sendMessage([
-            'peer' => $this->peer,
-            'reply_to_msg_id' => $this->chatId,
+            'peer' => $peer,
+            'reply_to_msg_id' => $chatId,
             'message' => '`' . $text . '`',
             'parse_mode' => 'Markdown',
         ]);
     }
-    public function animate($text, $peer, $chatId)
+    public function animate($opt)
     {
+        $text = $opt['message'];
+        $peer = $opt['peer'];
+        $chatId = $opt['id'];
         $temposleep = 300000;
         $oldtext = '';
         $num = 1;
+
         yield $this->messages->editMessage([
             'no_webpage' => true,
             'peer' => $peer,
@@ -141,7 +155,7 @@ MD;
             usleep($temposleep);
         }
     }
-    public function loopCommand($text, $count, $peer, $chatId)
+    public function loopCommand($opt)
     {
         /**
          * WARNING, when you use loop to loop other command
@@ -149,6 +163,11 @@ MD;
          * given peer and chatId is using dynamic properties
          * */
         $start = microtime(true) * 1000;
+        $text = $opt['message'];
+        $peer = $opt['peer'];
+        $chatId = $opt['id'];
+        $count = $opt['count'];
+
         for ($x = 0; $x < $count; $x++) {
             if ($text === false) {
                 $buff = $text = Fortune::make();
@@ -171,10 +190,13 @@ MD;
             'message' => $speed . ' *ms*',
         ]);
     }
-    public function upfile($file)
+    public function upfile($opt)
     {
+        $file = $opt['file'];
+        $peer = $opt['peer'];
+
         yield $this->messages->sendMedia([
-            'peer' => $this->peer,
+            'peer' => $peer,
             'parse_mode' => 'Markdown',
             'media' => [
                 '_' => 'inputMediaUploadedDocument',
@@ -183,19 +205,27 @@ MD;
             'message' => '*' . basename($file) . '* has been uploaded',
         ]);
     }
-    public function evalCommand($text)
+    public function evalCommand($opt)
     {
+        $text = $opt['message'];
+        $peer = $opt['peer'];
+        $chatId = $opt['id'];
+
         ob_start();
         eval($text);
         $text = ob_get_clean();
+
         yield $this->messages->editMessage([
-            'peer' => $this->peer,
+            'peer' => $peer,
             'message' => $text,
-            'id' => $this->chatId,
+            'id' => $chatId,
         ]);
     }
-    public function channelCommand($text)
+    public function channelCommand($opt)
     {
+        $text = $opt['message'];
+        $peer = $opt['peer'];
+
         $start = microtime(true) * 1000;
         $images = new Gambar($text, 'dark');
         $text = $images->getResult(
@@ -204,7 +234,7 @@ MD;
             100
         );
         yield $this->messages->sendMedia([
-            'peer' => '@BHSecFortune',
+            'peer' => $peer,
             'media' => [
                 '_' => 'inputMediaUploadedPhoto',
                 'file' => $this::STORAGE . '/result.jpg',
@@ -219,102 +249,130 @@ MD;
         if (empty($update['message']['message'])) {
             return;
         }
-        $this->message = $update['message']['message'];
-        $this->chatId = $update['message']['id'];
-        $this->fromId = @$update['message']['from_id'];
-        $this->peer = $update;
+        $message = $update['message']['message'];
+        $chatId = $update['message']['id'];
+        $fromId = @$update['message']['from_id'];
+        $peer = $update;
 
-        if (preg_match('/^\/urban/i', $this->message)) {
+        if (preg_match('/^\/urban/i', $message)) {
             try {
-                if (preg_match('/\s"(.+)"/i', $this->message, $match)) {
+                if (preg_match('/\s"(.+)"/i', $message, $match)) {
                     $query = $match[1];
+                } else {
+                    throw new Exception('query is empty');
                 }
-                yield $this->urban($query);
+
+                yield $this->urban([
+                    'message' => $query,
+                    'peer' => $peer,
+                    'id' => $chatId,
+                ]);
             } catch (Exception $e) {
                 yield $this->messages->sendMessage([
-                    'peer' => $this->peer,
-                    'reply_to_msg_id' => $this->chatId,
+                    'peer' => $peer,
+                    'reply_to_msg_id' => $chatId,
                     'message' => $e->getMessage(),
                 ]);
                 // yield $thiz->report($e);
             }
-        } elseif (preg_match('/^\/simpleimage/i', $this->message)) {
-            preg_match('/\s"(.+)"/i', $this->message, $match)
+        } elseif (preg_match('/^\/simpleimage/i', $message)) {
+            preg_match('/\s"(.+)"/i', $message, $match)
                 ? ($text = $match[1])
                 : ($text = Fortune::make());
-            yield $this->simpleImage($text);
-        } elseif (preg_match('/^\/fortune/i', $this->message)) {
-            yield $this->fortune();
-        } elseif (@$this->fromId == $this::ADMIN_ID) {
+            yield $this->simpleImage([
+                'peer' => $peer,
+                'id' => $chatId,
+                'message' => $text,
+            ]);
+        } elseif (preg_match('/^\/fortune/i', $message)) {
+            yield $this->fortune([
+                'peer' => $peer,
+                'id' => $chatId,
+            ]);
+        } elseif (@$fromId == $this::ADMIN_ID) {
             // admin commmand
-            if (preg_match('/^\/animate/', $this->message)) {
-                preg_match('/\s"(.+)"/i', $this->message, $match)
+            if (preg_match('/^\/animate/', $message)) {
+                preg_match('/\s"(.+)"/i', $message, $match)
                     ? ($text = $match[1])
                     : ($text = Fortune::make());
-                yield $this->animate($text, $this->peer, $this->chatId);
-            } elseif (preg_match('/^\/loop/i', $this->message)) {
+                yield $this->animate([
+                    'peer' => $peer,
+                    'message' => $text,
+                    'id' => $chatId,
+                ]);
+            } elseif (preg_match('/^\/loop/i', $message)) {
                 try {
-                    preg_match('/"\s(.*\d)/', $this->message, $match)
+                    preg_match('/"\s(.*\d)/', $message, $match)
                         ? ($count = $match[1])
                         : ($count = 1);
-                    preg_match('/^\/loop\s"(.*)"/i', $this->message, $match)
+                    preg_match('/^\/loop\s"(.*)"/i', $message, $match)
                         ? ($text = $match[1])
                         : ($text = false);
-                    yield $this->loopCommand(
-                        $text,
-                        $count,
-                        $this->peer,
-                        $this->chatId
-                    );
+                    yield $this->loopCommand([
+                        'peer' => $peer,
+                        'id' => $chatId,
+                        'message' => $text,
+                        'count' => $count,
+                    ]);
                 } catch (Exception $e) {
                     yield $this->messages->editMessage([
-                        'peer' => $this->peer,
-                        'id' => $this->chatId,
+                        'peer' => $peer,
+                        'id' => $chatId,
                         'message' => $e->getMessage(),
                     ]);
                     // yield $this->report($e);
                 }
-            } elseif (preg_match('/^\/upfile/i', $this->message)) {
+            } elseif (preg_match('/^\/upfile/i', $message)) {
                 try {
-                    preg_match('/\s"(.+)"/', $this->message, $match)
+                    preg_match('/\s"(.+)"/', $message, $match)
                         ? ($file = $match[1])
                         : ($file = $this::STORAGE . '/default.jpg');
 
-                    yield $this->upfile($file);
+                    yield $this->upfile([
+                        'peer' => $peer,
+                        'file' => $file,
+                    ]);
                 } catch (Exception | RPCErrorException $e) {
                     yield $this->messages->editMessage([
-                        'peer' => $this->peer,
-                        'id' => $this->chatId,
+                        'peer' => $peer,
+                        'id' => $chatId,
                         'message' => $e->getMessage(),
                     ]);
                     //yield $this->report($e);
                 }
-            } elseif (preg_match('/^\/eval/i', $this->message)) {
+            } elseif (preg_match('/^\/eval/i', $message)) {
                 try {
-                    $text = substr($this->message, 6);
-                    yield $this->evalCommand($text);
+                    $text = substr($message, 6);
+                    yield $this->evalCommand([
+                        'peer' => $peer,
+                        'id' => $chatId,
+                        'message' => $text,
+                    ]);
                 } catch (Exception | RPCErrorException | ParseError $e) {
                     $text = $e->getMessage();
                     yield $this->messages->editMessage([
-                        'peer' => $this->peer,
-                        'id' => $this->chatId,
+                        'peer' => $peer,
+                        'id' => $chatId,
                         'message' => $text,
                     ]);
                     //yield $this->report($e);
                 }
-            } elseif (preg_match('/^\/channel/i', $this->message)) {
+            } elseif (preg_match('/^\/channel/i', $message)) {
                 try {
-                    preg_match('/\s"(.+)"/i', $this->message, $match)
+                    preg_match('/\s"(.+)"/i', $message, $match)
                         ? ($text = $match[1])
                         : ($text = Fortune::make());
-                    $speed = (yield $this->channelCommand($text));
+                    $speed = (yield $this->channelCommand([
+                        'peer' => $peer,
+                        'message' => $text,
+                    ]));
                     $text = 'Uploaded in *' . $speed . 'ms*';
                 } catch (RPCErrorException $e) {
                     $text = $e->getMessage();
                 }
                 yield $this->messages->editMessage([
-                    'peer' => $this->peer,
-                    'id' => $this->chatId,
+                    'peer' => $peer,
+                    'id' => $chatId,
                     'parse_mode' => 'Markdown',
                     'message' => $text,
                 ]);
