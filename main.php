@@ -12,6 +12,7 @@ use danog\MadelineProto\FileCallback;
 use Cvar1984\Api\RapidApi;
 use Bhsec\SimpleImage\Gambar;
 use Wheeler\Fortune\Fortune;
+
 /**
  * List of exception types
  \danog\MadelineProto\Exception
@@ -42,7 +43,9 @@ class Mybot extends EventHandler
 {
     public const ADMIN_ID = '905361440';
     public const ADMIN_PEER = 'Cvar1984';
+    public const CHANNEL_PEER = 'BHSecFortune';
     public const STORAGE = './assets';
+    public const WAIT = 300000;
 
     public function urban($opt)
     {
@@ -88,7 +91,7 @@ MD;
                             'id' => $chatId,
                             'message' => 'Upload progress: ' . $progress . '%',
                         ]);
-                        usleep(300000);
+                        usleep($this::WAIT);
                     }
                 ),
             ],
@@ -113,7 +116,6 @@ MD;
         $text = $opt['message'];
         $peer = $opt['peer'];
         $chatId = $opt['id'];
-        $temposleep = 300000;
         $oldtext = '';
         $num = 1;
 
@@ -130,7 +132,7 @@ MD;
                 ],
             ],
         ]);
-        usleep($temposleep);
+        usleep($this::WAIT);
         while ($oldtext != $text) {
             $oldtext = substr($text, 0, $num);
             $oldtext1 = $oldtext . "|";
@@ -148,7 +150,7 @@ MD;
                     ],
                 ],
             ]);
-            usleep($temposleep);
+            usleep($this::WAIT);
             yield $this->messages->editMessage([
                 'no_webpage' => true,
                 'peer' => $peer,
@@ -164,16 +166,11 @@ MD;
                 ],
             ]);
             $num++;
-            usleep($temposleep);
+            usleep($this::WAIT);
         }
     }
     public function loopCommand($opt)
     {
-        /**
-         * WARNING, when you use loop to loop other command
-         * you will send output to any event because
-         * given peer and chatId is using dynamic properties
-         * */
         $start = microtime(true) * 1000;
         $text = $opt['message'];
         $peer = $opt['peer'];
@@ -181,16 +178,16 @@ MD;
         $count = $opt['count'];
 
         for ($x = 0; $x < $count; $x++) {
-            if ($text === false) {
-                $buff = $text = Fortune::make();
-            }
+            $text === false
+                ? ($buff = $text = Fortune::make())
+                : ($buff = null);
 
             $this->messages->sendMessage([
                 'peer' => $peer,
                 'message' => $text,
             ]);
 
-            if (@$buff == $text) {
+            if ($buff == $text) {
                 $text = false;
             }
         }
@@ -213,12 +210,12 @@ MD;
             'parse_mode' => 'Markdown',
             'media' => [
                 '_' => 'inputMediaUploadedDocument',
-                'file' => new FileCallback($file,
-                function ($progress) use($peer, $chatId) {
+                'file' => new FileCallback(
+                    $file, function ($progress) use ($peer, $chatId) {
                     yield $this->messages->editMessage([
                         'peer' => $peer,
                         'id' => $chatId,
-                        'message' => 'Upload progress: ' . $progress . '%'
+                        'message' => 'Upload progress: ' . $progress . '%',
                     ]);
                     usleep(300000);
                 }),
@@ -282,7 +279,6 @@ MD;
                 } else {
                     throw new Exception('query is empty');
                 }
-
                 yield $this->urban([
                     'message' => $query,
                     'peer' => $peer,
@@ -385,7 +381,7 @@ MD;
                         ? ($text = $match[1])
                         : ($text = Fortune::make());
                     $speed = (yield $this->channelCommand([
-                        'peer' => '@BHSecFortune',
+                        'peer' => $this::CHANNEL_PEER,
                         'message' => $text,
                     ]));
                     $text = 'Uploaded in *' . $speed . 'ms*';
