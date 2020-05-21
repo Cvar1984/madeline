@@ -8,6 +8,7 @@ use danog\MadelineProto\Logger;
 use danog\MadelineProto\Tools;
 use danog\MadelineProto\RPCErrorException;
 use danog\MadelineProto\Exception;
+use danog\MadelineProto\FileCallback;
 use Cvar1984\Api\RapidApi;
 use Bhsec\SimpleImage\Gambar;
 use Wheeler\Fortune\Fortune;
@@ -76,11 +77,22 @@ MD;
         yield $this->messages->sendMedia([
             'peer' => $peer,
             'reply_to_msg_id' => $chatId,
+            'parse_mode' => 'Markdown',
             'media' => [
                 '_' => 'inputMediaUploadedPhoto',
-                'file' => $this::STORAGE . '/result.jpg',
+                'file' => new FileCallback(
+                    $this::STORAGE . '/result.jpg',
+                    function ($progress) use ($peer, $chatId) {
+                        yield $this->messages->editMessage([
+                            'peer' => $peer,
+                            'id' => $chatId,
+                            'message' => 'Upload progress: ' . $progress . '%',
+                        ]);
+                        usleep(300000);
+                    }
+                ),
             ],
-            'message' => $text,
+            'message' => '`' . $text . '`',
         ]);
     }
     public function fortune($opt)
@@ -194,13 +206,22 @@ MD;
     {
         $file = $opt['file'];
         $peer = $opt['peer'];
+        $chatId = $opt['id'];
 
         yield $this->messages->sendMedia([
             'peer' => $peer,
             'parse_mode' => 'Markdown',
             'media' => [
                 '_' => 'inputMediaUploadedDocument',
-                'file' => $file,
+                'file' => new FileCallback($file,
+                function ($progress) use($peer, $chatId) {
+                    yield $this->messages->editMessage([
+                        'peer' => $peer,
+                        'id' => $chatId,
+                        'message' => 'Upload progress: ' . $progress . '%'
+                    ]);
+                    usleep(300000);
+                }),
             ],
             'message' => '*' . basename($file) . '* has been uploaded',
         ]);
@@ -330,6 +351,7 @@ MD;
 
                     yield $this->upfile([
                         'peer' => $peer,
+                        'id' => $chatId,
                         'file' => $file,
                     ]);
                 } catch (Exception | RPCErrorException $e) {
@@ -363,7 +385,7 @@ MD;
                         ? ($text = $match[1])
                         : ($text = Fortune::make());
                     $speed = (yield $this->channelCommand([
-                        'peer' => $peer,
+                        'peer' => '@BHSecFortune',
                         'message' => $text,
                     ]));
                     $text = 'Uploaded in *' . $speed . 'ms*';
