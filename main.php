@@ -8,7 +8,7 @@ use danog\MadelineProto\Tools;
 use danog\MadelineProto\RPCErrorException;
 use danog\MadelineProto\Exception;
 use Wheeler\Fortune\Fortune;
-use Cvar1984\Madeline\Command;
+use Cvar1984\Madeline\Layer\Command;
 
 /**
  * List of exception types
@@ -38,7 +38,7 @@ use Cvar1984\Madeline\Command;
  */
 class Mybot extends Command
 {
-   public function onAny($update)
+    public function onAny($update)
     {
         // on any event
         if (empty($update['message']['message'])) {
@@ -183,7 +183,7 @@ class Mybot extends Command
 
 $settings = [
     'logger' => [
-        'param' => Command::STORAGE . '/Madeline.log',
+        'param' => MyBot::STORAGE . '/Madeline.log',
     ],
     'max_tries' => [
         'query' => 1,
