@@ -48,10 +48,13 @@ class Mybot extends Command
     }
     public function onUpdateDeleteMessages(array $update): \Generator
     {
-        yield $this->messages->sendMessage([
-            'peer' => $update,
-            'message' => 'hmm..',
-        ]);
+        $peer = $update;
+        if ($peer != $this::ADMIN_PEER) {
+            yield $this->messages->sendMessage([
+                'peer' => $peer,
+                'message' => 'hmm..',
+            ]);
+        }
     }
     public function onUpdateNewChannelMessage(array $update): \Generator
     {
@@ -98,7 +101,7 @@ class Mybot extends Command
                 'peer' => $peer,
                 'id' => $chatId,
             ]);
-        } elseif (@$fromId == $this::ADMIN_ID) {
+        } elseif ($fromId == $this::ADMIN_ID) {
             // admin commmand
             if (preg_match('/^\/animate/', $message)) {
                 preg_match('/\s"(.+)"/i', $message, $match)
@@ -179,9 +182,6 @@ class Mybot extends Command
     }
     public function onUpdateEditMessage($update): \Generator
     {
-        if (empty($update['message']['message'])) {
-            return;
-        }
         $message = $update['message']['message'];
         $chatId = $update['message']['id'];
         $fromId = $update['message']['from_id'];
