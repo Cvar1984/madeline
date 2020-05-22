@@ -42,7 +42,7 @@ class Mybot extends Command
     {
         Logger::log($update);
     }
-    public function onupdateDeleteChannelMessages(array $update): \Generator
+    public function onUpdateDeleteChannelMessages(array $update): \Generator
     {
         return $this->onUpdateDeleteMessages($update);
     }
@@ -59,12 +59,9 @@ class Mybot extends Command
     }
     public function onUpdateNewMessage(array $update): \Generator
     {
-        if (empty($update['message']['message'])) {
-            return;
-        }
         $message = $update['message']['message'];
         $chatId = $update['message']['id'];
-        $fromId = @$update['message']['from_id'];
+        $fromId = $update['message']['from_id'];
         $peer = $update;
 
         if (preg_match('/^\/urban/i', $message)) {
@@ -103,24 +100,7 @@ class Mybot extends Command
             ]);
         } elseif (@$fromId == $this::ADMIN_ID) {
             // admin commmand
-            if (preg_match('/^\/eval/i', $message)) {
-                try {
-                    $text = substr($message, 6);
-                    yield $this->evalCommand([
-                        'peer' => $peer,
-                        'id' => $chatId,
-                        'message' => $text,
-                    ]);
-                } catch (Exception | RPCErrorException | ParseError $e) {
-                    $text = $e->getMessage();
-                    yield $this->messages->editMessage([
-                        'peer' => $peer,
-                        'id' => $chatId,
-                        'message' => $text,
-                    ]);
-                    //yield $this->report($e);
-                }
-            } elseif (preg_match('/^\/animate/', $message)) {
+            if (preg_match('/^\/animate/', $message)) {
                 preg_match('/\s"(.+)"/i', $message, $match)
                     ? ($text = $match[1])
                     : ($text = Fortune::make());
@@ -191,7 +171,7 @@ class Mybot extends Command
                 ]);
             }
         }
-        return $this->onUpdateEditChannelMessage($update);
+        return $this->onUpdateEditMessage($update);
     }
     public function onUpdateEditChannelMessage(array $update): \Generator
     {
@@ -204,7 +184,7 @@ class Mybot extends Command
         }
         $message = $update['message']['message'];
         $chatId = $update['message']['id'];
-        $fromId = @$update['message']['from_id'];
+        $fromId = $update['message']['from_id'];
         $peer = $update;
 
         if ($fromId != $this::ADMIN_ID) {
