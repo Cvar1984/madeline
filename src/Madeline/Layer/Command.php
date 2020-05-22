@@ -19,7 +19,7 @@ abstract class Command extends CommandLayer
     use Animate;
     use Loop;
     use Upfile;
-    use EvalTrait; 
+    use EvalTrait;
     use Channel;
-    use fortune;
+    use Fortune;
 }

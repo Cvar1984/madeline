@@ -1,6 +1,7 @@
 <?php
 
 namespace Cvar1984\Madeline\Command;
+
 use danog\MadelineProto\FileCallback;
 use Bhsec\SimpleImage\Gambar;
 

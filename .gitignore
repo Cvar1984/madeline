@@ -1,5 +1,6 @@
 *.phar
 session*
+.php_cs.cache
 /vendor/
 !/assets/
 /assets/*
