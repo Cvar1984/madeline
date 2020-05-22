@@ -2,13 +2,12 @@
 
 namespace Cvar1984\Madeline;
 
-use danog\MadelineProto\EventHandler;
 use danog\MadelineProto\FileCallback;
 use Cvar1984\Api\RapidApi;
 use Bhsec\SimpleImage\Gambar;
 use Wheeler\Fortune\Fortune;
 
-class Command extends EventHandler
+abstract class Command extends CommandLayer
 {
     public const ADMIN_ID = '905361440';
     public const ADMIN_PEER = 'Cvar1984';
