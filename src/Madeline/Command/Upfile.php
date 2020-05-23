@@ -24,7 +24,7 @@ trait Upfile
                             'id' => $chatId,
                             'message' => 'Upload progress: ' . $progress . '%',
                         ]);
-                        usleep(300000);
+                        usleep($this::WAIT);
                     }
                 ),
             ],
