@@ -40,19 +40,30 @@ class Mybot extends Command
 {
     public function onAny($update)
     {
-        Logger::log($update);
+        Logger::log($update, Logger::VERBOSE);
+    }
+    public function updateUserTyping(array $update): \Generator
+    {
+        return $this->updateChatUserTyping($update);
+    }
+    public function updateChatUserTyping(array $update): \Generator
+    {
+        yield $this->messages->setTyping([
+            'peer' => $update,
+            'action' => [
+                '_' => 'sendMessageTypingAction',
+            ],
+        ]);
     }
     public function onUpdateDeleteChannelMessages(array $update): \Generator
     {
-        return $this->onUpdateDeleteMessages($update);
-    }
-    public function onUpdateDeleteMessages(array $update): \Generator
-    {
         $peer = $update;
-        if ($peer != $this::ADMIN_PEER) {
+        @$fromId = $update['message']['from_id'];
+
+        if ($fromId != $this::ADMIN_PEER) {
             yield $this->messages->sendMessage([
                 'peer' => $peer,
-                'message' => 'hmm..',
+                'message' => '✍',
             ]);
         }
     }
@@ -62,9 +73,18 @@ class Mybot extends Command
     }
     public function onUpdateNewMessage(array $update): \Generator
     {
-        $message = $update['message']['message'];
+        if (!empty($update['message']['message'])) {
+            $message = $update['message']['message'];
+        } else {
+            return; // catch command only not media
+        }
+        if (isset($update['message']['from_id'])) {
+            $fromId = $update['message']['from_id'];
+        } else {
+            return; // only user with id
+        }
+
         $chatId = $update['message']['id'];
-        $fromId = $update['message']['from_id'];
         $peer = $update;
 
         if (preg_match('/^\/urban/i', $message)) {
@@ -182,10 +202,19 @@ class Mybot extends Command
     }
     public function onUpdateEditMessage($update): \Generator
     {
-        $message = $update['message']['message'];
+        if (empty($update['message']['message'])) {
+            return;
+        } else {
+            $message = $update['message']['message'];
+        }
         $chatId = $update['message']['id'];
-        $fromId = $update['message']['from_id'];
         $peer = $update;
+
+        if (isset($update['message']['from_id'])) {
+            $fromId = $update['message']['from_id'];
+        } else {
+            return; // only user with id
+        }
 
         if ($fromId != $this::ADMIN_ID) {
             return;
