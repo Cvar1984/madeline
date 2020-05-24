@@ -14,7 +14,7 @@ trait Urban
         $data = $data->list[0];
         $text = <<<MD
 **definition:** *{$data->definition}*
-**permalink:** `{$data->permalink}`
+[permalink]({$data->permalink})
 MD;
         yield $this->messages->sendMessage([
             'peer' => $peer,
