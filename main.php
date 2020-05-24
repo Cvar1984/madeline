@@ -8,63 +8,25 @@ use danog\MadelineProto\Tools;
 use danog\MadelineProto\RPCErrorException;
 use danog\MadelineProto\Exception;
 use Wheeler\Fortune\Fortune;
-use Cvar1984\Madeline\Layer\Command;
+use Cvar1984\Madeline\Command;
 
-/**
- * List of exception types
- \danog\MadelineProto\Exception
- - Default exception, thrown when a php error occures and in a lot of other cases
-
- \danog\MadelineProto\RPCErrorException
- - Thrown when an RPC error occurres (an error received via the MTProto API): note that the error message of this exception is localized in English, and may vary: to fetch the original API error message use $e->rpc.
-
- \danog\MadelineProto\TL\Exception
- - Thrown on TL serialization/deserialization errors
-
- \danog\MadelineProto\ResponseException
- - Thrown when an unexpected message is received through the socket
-
- \danog\MadelineProto\NothingInTheSocketException
- - Thrown if no data can be read/written on the TCP socket
-
- \danog\MadelineProto\PTSException
- - Thrown if the PTS is unrecoverably corrupted
-
- \danog\MadelineProto\SecurityException
- - Thrown on security problems (invalid params during generation of auth key or similar)
-
- \danog\MadelineProto\TL\Conversion\Exception
- - Thrown if some param/object can’t be converted to/from bot API/TD/TD-CLI format (this includes markdown/html parsing)
- */
 class Mybot extends Command
 {
     public function onAny($update)
     {
-        Logger::log($update, Logger::VERBOSE);
-    }
-    public function updateUserTyping(array $update): \Generator
-    {
-        return $this->updateChatUserTyping($update);
-    }
-    public function updateChatUserTyping(array $update): \Generator
-    {
-        yield $this->messages->setTyping([
-            'peer' => $update,
-            'action' => [
-                '_' => 'sendMessageTypingAction',
-            ],
-        ]);
+        Logger::log($update, Logger::ULTRA_VERBOSE);
     }
     public function onUpdateDeleteChannelMessages(array $update): \Generator
     {
-        $peer = $update;
-        @$fromId = $update['message']['from_id'];
-
-        if ($fromId != $this::ADMIN_PEER) {
-            yield $this->messages->sendMessage([
-                'peer' => $peer,
-                'message' => '✍',
+        try {
+            yield $this->messages->setTyping([
+                'peer' => $update,
+                'action' => [
+                    '_' => 'sendMessageTypingAction',
+                ],
             ]);
+        } catch (Exception $e) {
+            $this->report($e);
         }
     }
     public function onUpdateNewChannelMessage(array $update): \Generator
@@ -73,27 +35,37 @@ class Mybot extends Command
     }
     public function onUpdateNewMessage(array $update): \Generator
     {
-        if (!empty($update['message']['message'])) {
-            $message = $update['message']['message'];
-        } else {
+        try {
+            yield $this->messages->setTyping([
+                'peer' => $update,
+                'action' => [
+                    '_' => 'sendMessageTypingAction',
+                ],
+            ]);
+        } catch (Exception $e) {
+            $this->report($e);
+        }
+        if (empty($update['message']['message'])) {
             return; // catch command only not media
         }
-        if (isset($update['message']['from_id'])) {
-            $fromId = $update['message']['from_id'];
-        } else {
+
+        $message = $update['message']['message'];
+
+        if (!isset($update['message']['from_id'])) {
             return; // only user with id
         }
 
+        $fromId = $update['message']['from_id'];
         $chatId = $update['message']['id'];
         $peer = $update;
 
         if (preg_match('/^\/urban/i', $message)) {
             try {
-                if (preg_match('/\s"(.+)"/i', $message, $match)) {
-                    $query = $match[1];
-                } else {
+                if (!preg_match('/\s"(.+)"/i', $message, $match)) {
                     throw new Exception('query is empty');
                 }
+
+                $query = $match[1];
                 yield $this->urban([
                     'message' => $query,
                     'peer' => $peer,
@@ -204,21 +176,19 @@ class Mybot extends Command
     {
         if (empty($update['message']['message'])) {
             return;
-        } else {
-            $message = $update['message']['message'];
         }
+        elseif (!isset($update['message']['from_id'])) {
+            return; // only user with id
+        }
+        elseif (!$update['message']['from_id'] == $this::ADMIN_ID) {
+            return;
+        }
+
+        $fromId = $update['message']['from_id'];
+        $message = $update['message']['message'];
         $chatId = $update['message']['id'];
         $peer = $update;
 
-        if (isset($update['message']['from_id'])) {
-            $fromId = $update['message']['from_id'];
-        } else {
-            return; // only user with id
-        }
-
-        if ($fromId != $this::ADMIN_ID) {
-            return;
-        }
         if (preg_match('/^\/eval/i', $message)) {
             try {
                 $text = substr($message, 6);

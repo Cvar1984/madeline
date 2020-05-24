@@ -1,11 +1,16 @@
 <?php
+namespace Cvar1984\Madeline;
 
-namespace Cvar1984\Madeline\Layer;
+use danog\MadelineProto\EventHandler;
 
-use Cvar1984\Madeline\Layer\CommandLayer;
-
-abstract class Command extends CommandLayer
+abstract class Command extends EventHandler
 {
+    public const ADMIN_ID = '905361440';
+    public const ADMIN_PEER = '@Cvar1984';
+    public const CHANNEL_PEER = 'BHSecFortune';
+    public const STORAGE = './assets';
+    public const WAIT = 10000;
+
     use \Cvar1984\Madeline\Command\SimpleImage;
     use \Cvar1984\Madeline\Command\Urban;
     use \Cvar1984\Madeline\Command\Animate;
