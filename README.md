@@ -28,14 +28,14 @@ abstract class Command extends EventHandler
 Now create a command
 ```php
 <?php
-// src/Madeline/Command/Channel.php
+// src/Madeline/Command/SimpleImage.php
 namespace Cvar1984\Madeline\Command;
 
 use Bhsec\SimpleImage\Gambar;
 
-trait Channel
+trait SimpleImage
 {
-    public function channelCommand($opt)
+    public function commandSimpleImage($opt)
     {
         $text = $opt['message'];
         $peer = $opt['peer'];
@@ -71,7 +71,7 @@ class Mybot extends Command
 {
     public function onAny($update)
     {
-        yield $this->channelCommand([
+        yield $this->commandSimpleImage([
             'peer' => $update,
             'text' => \Wheeler\Fortune\Fortune::make()
          ]);
