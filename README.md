@@ -10,7 +10,7 @@ Personal MTProto Telegram User BOT
 
 
 ## how to create a command
-Register command on event handler
+Register command on custom event handler
 ```php
 <?php
 // src/Madeline/Command.php
@@ -47,6 +47,7 @@ trait SimpleImage
             'image/jpeg',
             100
         );
+
         yield $this->messages->sendMedia([
                 'peer' => $peer,
                 'media' => [
@@ -54,6 +55,7 @@ trait SimpleImage
                 'file' => $this::STORAGE . '/result.jpg',
                 ],
         ]);
+
         return round(microtime(true) * 1000 - $start);
     }
 }
@@ -74,9 +76,10 @@ class Mybot extends Command
         yield $this->commandSimpleImage([
             'peer' => $update,
             'text' => \Wheeler\Fortune\Fortune::make()
-         ]);
+        ]);
     }
 }
+
 $settings = [
     'logger' => [
         'param' => MyBot::STORAGE . '/Madeline.log',
@@ -91,3 +94,11 @@ $MadelineProto->async(true);
 $MadelineProto->startAndLoop(MyBot::class);
 ```
 That's it
+## Todo
+- dependency injection
+- more api and addons
+  - fraud card checker
+  - music downloader
+  - youtube downloader
+  - broadcast messager by locations
+  - faucet bot autoclick

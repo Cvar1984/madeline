@@ -16,17 +16,17 @@ trait Upfile
             'parse_mode' => 'Markdown',
             'media' => [
                 '_' => 'inputMediaUploadedDocument',
-                'file' => new FileCallback(
-                    $file,
-                    function ($progress) use ($peer, $chatId) {
-                        yield $this->messages->editMessage([
-                            'peer' => $peer,
-                            'id' => $chatId,
-                            'message' => 'Upload progress: ' . $progress . '%',
-                        ]);
-                        usleep($this::WAIT);
-                    }
-                ),
+                'file' => new FileCallback($file, function ($progress) use (
+                    $peer,
+                    $chatId
+                ) {
+                    yield $this->messages->editMessage([
+                        'peer' => $peer,
+                        'id' => $chatId,
+                        'message' => 'Upload progress: ' . $progress . '%',
+                    ]);
+                    usleep($this::WAIT);
+                }),
             ],
             'message' => '*' . basename($file) . '* has been uploaded',
         ]);

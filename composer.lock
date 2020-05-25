@@ -1012,12 +1012,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BlackHoleSecurity/simpleimage.git",
-                "reference": "f9e11fd664f7f16ebe3e14ad172cecfaa4c1aa38"
+                "reference": "834fe736474bdc384e1368acf0219adab8ea336c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BlackHoleSecurity/simpleimage/zipball/f9e11fd664f7f16ebe3e14ad172cecfaa4c1aa38",
-                "reference": "f9e11fd664f7f16ebe3e14ad172cecfaa4c1aa38",
+                "url": "https://api.github.com/repos/BlackHoleSecurity/simpleimage/zipball/834fe736474bdc384e1368acf0219adab8ea336c",
+                "reference": "834fe736474bdc384e1368acf0219adab8ea336c",
                 "shasum": ""
             },
             "require": {
@@ -1043,7 +1043,7 @@
                 }
             ],
             "description": "fanspage images generator using unsplash wrapper",
-            "time": "2020-05-09T03:04:57+00:00"
+            "time": "2020-05-25T15:53:39+00:00"
         },
         {
             "name": "claviska/simpleimage",

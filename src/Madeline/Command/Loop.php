@@ -19,8 +19,8 @@ trait Loop
                 : ($buff = null);
 
             $this->messages->sendMessage([
-                    'peer' => $peer,
-                    'message' => $text,
+                'peer' => $peer,
+                'message' => $text,
             ]);
 
             if ($buff == $text) {
@@ -29,10 +29,10 @@ trait Loop
         }
         $speed = round(microtime(true) * 1000 - $start);
         $this->messages->editMessage([
-                'peer' => $peer,
-                'id' => $chatId,
-                'parse_mode' => 'Markdown',
-                'message' => $speed . ' *ms*',
+            'peer' => $peer,
+            'id' => $chatId,
+            'parse_mode' => 'Markdown',
+            'message' => $speed . ' *ms*',
         ]);
     }
 }
