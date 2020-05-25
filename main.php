@@ -25,7 +25,7 @@ class Mybot extends Command
                     '_' => 'sendMessageTypingAction',
                 ],
             ]);
-        } catch (Exception $e) {
+        } catch (Exception | RPCErrorException $e) {
             $this->report($e);
         }
     }
@@ -42,7 +42,7 @@ class Mybot extends Command
                     '_' => 'sendMessageTypingAction',
                 ],
             ]);
-        } catch (Exception $e) {
+        } catch (Exception | RPCErrorException $e) {
             $this->report($e);
         }
         if (empty($update['message']['message'])) {
@@ -87,6 +87,8 @@ class Mybot extends Command
                 'peer' => $peer,
                 'id' => $chatId,
                 'message' => $text,
+                'quality' => 100,
+                'query' => 'Dark',
             ]);
         } elseif (preg_match('/^\/fortune/i', $message)) {
             yield $this->fortune([
@@ -150,9 +152,13 @@ class Mybot extends Command
                     preg_match('/\s"(.+)"/i', $message, $match)
                         ? ($text = $match[1])
                         : ($text = Fortune::make());
+
                     $speed = (yield $this->channelCommand([
                         'peer' => $this::CHANNEL_PEER,
+                        'id' => $chatId,
                         'message' => $text,
+                        'quality' => 100,
+                        'query' => 'Dark',
                     ]));
                     $text = 'Uploaded in *' . $speed . 'ms*';
                 } catch (RPCErrorException $e) {
@@ -176,11 +182,9 @@ class Mybot extends Command
     {
         if (empty($update['message']['message'])) {
             return;
-        }
-        elseif (!isset($update['message']['from_id'])) {
+        } elseif (!isset($update['message']['from_id'])) {
             return; // only user with id
-        }
-        elseif (!$update['message']['from_id'] == $this::ADMIN_ID) {
+        } elseif (!$update['message']['from_id'] == $this::ADMIN_ID) {
             return;
         }
 
