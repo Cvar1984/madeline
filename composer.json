@@ -15,7 +15,7 @@
     "ext-mbstring": "*",
     "ext-gd" : "*",
     "danog/madelineproto": "^5.1",
-    "bhsec/simpleimage": "dev-master",
+    "bhsec/simpleimage": "^0.0",
     "mdwheele/fortune": "dev-master"
   },
   "autoload": {

@@ -14,7 +14,7 @@ class Mybot extends Command
 {
     public function onAny($update)
     {
-        Logger::log($update, Logger::ULTRA_VERBOSE);
+        Logger::log($update, Logger::VERBOSE);
     }
     public function onUpdateDeleteChannelMessages(array $update): \Generator
     {
@@ -29,10 +29,6 @@ class Mybot extends Command
             $this->report($e);
         }
     }
-    public function onUpdateNewChannelMessage(array $update): \Generator
-    {
-        return $this->onUpdateNewMessage($update);
-    }
     public function onUpdateNewMessage(array $update): \Generator
     {
         try {
@@ -45,7 +41,12 @@ class Mybot extends Command
         } catch (Exception | RPCErrorException $e) {
             $this->report($e);
         }
-        if (empty($update['message']['message'])) {
+ 
+        return $this->onUpdateNewChannelMessage($update);
+    }
+    public function onUpdateNewChannelMessage(array $update): \Generator
+    {
+       if (empty($update['message']['message'])) {
             return; // catch command only not media
         }
 
@@ -80,7 +81,7 @@ class Mybot extends Command
                 // yield $thiz->report($e);
             }
         } elseif (preg_match('/^\/simpleimage/i', $message)) {
-            preg_match('/\s"(.+)"/i', $message, $match)
+            preg_match('/\s"(.+)"/Usi', $message, $match)
                 ? ($text = $match[1])
                 : ($text = Fortune::make());
             yield $this->simpleImage([
@@ -98,7 +99,7 @@ class Mybot extends Command
         } elseif ($fromId == $this::ADMIN_ID) {
             // admin commmand
             if (preg_match('/^\/animate/', $message)) {
-                preg_match('/\s"(.+)"/i', $message, $match)
+                preg_match('/\s"(.+)"/Usi', $message, $match)
                     ? ($text = $match[1])
                     : ($text = Fortune::make());
                 yield $this->animate([
@@ -130,7 +131,7 @@ class Mybot extends Command
                 }
             } elseif (preg_match('/^\/upfile/i', $message)) {
                 try {
-                    preg_match('/\s"(.+)"/', $message, $match)
+                    preg_match('/\s"(.*)"/Usi', $message, $match)
                         ? ($file = $match[1])
                         : ($file = $this::STORAGE . '/default.jpg');
 
@@ -149,7 +150,7 @@ class Mybot extends Command
                 }
             } elseif (preg_match('/^\/channel/i', $message)) {
                 try {
-                    preg_match('/\s"(.+)"/i', $message, $match)
+                    preg_match('/\s"(.+)"/Usi', $message, $match)
                         ? ($text = $match[1])
                         : ($text = Fortune::make());
 
