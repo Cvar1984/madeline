@@ -12,9 +12,13 @@ use Cvar1984\Madeline\Command;
 
 class Mybot extends Command
 {
-    public function onAny($update)
+    public function onAny($update): \Generator
     {
         Logger::log($update, Logger::VERBOSE);
+    }
+    public function onUpdateDeleteMessages(array $update): \Generator
+    {
+        yield $this->onUpdateDeleteChannelMessages($update);
     }
     public function onUpdateDeleteChannelMessages(array $update): \Generator
     {
@@ -26,7 +30,7 @@ class Mybot extends Command
                 ],
             ]);
         } catch (Exception | RPCErrorException $e) {
-            $this->report($e);
+            //$this->report($e);
         }
     }
     public function onUpdateNewMessage(array $update): \Generator
@@ -42,20 +46,18 @@ class Mybot extends Command
             $this->report($e);
         }
 
-        return $this->onUpdateNewChannelMessage($update);
+        yield $this->onUpdateNewChannelMessage($update);
     }
     public function onUpdateNewChannelMessage(array $update): \Generator
     {
-        if (empty($update['message']['message'])) {
+        if (
+            empty($update['message']['message']) &&
+            !isset($update['message']['from_id'])
+        ) {
             return; // catch command only not media
         }
 
         $message = $update['message']['message'];
-
-        if (!isset($update['message']['from_id'])) {
-            return; // only user with id
-        }
-
         $fromId = $update['message']['from_id'];
         $chatId = $update['message']['id'];
         $peer = $update;
@@ -67,6 +69,7 @@ class Mybot extends Command
                 }
 
                 $query = $match[1];
+
                 yield $this->urban([
                     'message' => $query,
                     'peer' => $peer,
@@ -201,11 +204,13 @@ class Mybot extends Command
     }
     public function onUpdateEditMessage($update): \Generator
     {
-        if (empty($update['message']['message'])) {
-            return;
-        } elseif (!isset($update['message']['from_id'])) {
-            return; // only user with id
-        } elseif (!$update['message']['from_id'] == $this::ADMIN_ID) {
+        if (
+            !$update['message']['from_id'] == $this::ADMIN_ID &&
+            empty(
+                $update['message']['message'] &&
+                    !isset($update['message']['from_id'])
+            )
+        ) {
             return;
         }
 
