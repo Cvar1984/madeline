@@ -41,12 +41,12 @@ class Mybot extends Command
         } catch (Exception | RPCErrorException $e) {
             $this->report($e);
         }
- 
+
         return $this->onUpdateNewChannelMessage($update);
     }
     public function onUpdateNewChannelMessage(array $update): \Generator
     {
-       if (empty($update['message']['message'])) {
+        if (empty($update['message']['message'])) {
             return; // catch command only not media
         }
 
@@ -79,6 +79,26 @@ class Mybot extends Command
                     'message' => $e->getMessage(),
                 ]);
                 // yield $thiz->report($e);
+            }
+        } elseif (preg_match('/^\/checker/i', $message)) {
+            try {
+                if (!preg_match('/\s"(.*\d)"/', $message, $match)) {
+                    throw new Exception('Not a valid cc');
+                }
+
+                $text = $match[1];
+
+                yield $this->isValidCreditCard([
+                    'peer' => $peer,
+                    'id' => $chatId,
+                    'message' => $text,
+                ]);
+            } catch (Exception $e) {
+                yield $this->messages->sendMessage([
+                    'peer' => $peer,
+                    'reply_to_msg_id' => $chatId,
+                    'message' => $e->getMessage(),
+                ]);
             }
         } elseif (preg_match('/^\/simpleimage/i', $message)) {
             preg_match('/\s"(.+)"/Usi', $message, $match)

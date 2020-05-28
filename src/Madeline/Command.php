@@ -19,4 +19,5 @@ abstract class Command extends EventHandler
     use \Cvar1984\Madeline\Command\EvalTrait;
     use \Cvar1984\Madeline\Command\Channel;
     use \Cvar1984\Madeline\Command\Fortune;
+    use \Cvar1984\Madeline\Command\Checker;
 }

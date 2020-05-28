@@ -28,8 +28,10 @@ trait SimpleImage
             ],
         ];
 
-        $text = json_encode(QuoteTemplates::make($imagesOption),
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $text = json_encode(
+            QuoteTemplates::make($imagesOption),
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+        );
         yield $this->messages->sendMedia([
             'peer' => $peer,
             'reply_to_msg_id' => $chatId,
