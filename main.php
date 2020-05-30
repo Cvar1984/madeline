@@ -14,7 +14,7 @@ class Mybot extends Command
 {
     public function onAny($update): \Generator
     {
-        Logger::log($update, Logger::VERBOSE);
+        yield Logger::log($update, Logger::VERBOSE);
     }
     public function onUpdateDeleteMessages(array $update): \Generator
     {
@@ -51,8 +51,9 @@ class Mybot extends Command
     public function onUpdateNewChannelMessage(array $update): \Generator
     {
         if (
-            empty($update['message']['message']) &&
-            !isset($update['message']['from_id'])
+            !isset($update['message']['message']) &&
+            !isset($update['message']['from_id']) &&
+            !isset($update['message']['id'])
         ) {
             return; // catch command only not media
         }
@@ -205,11 +206,9 @@ class Mybot extends Command
     public function onUpdateEditMessage($update): \Generator
     {
         if (
-            !$update['message']['from_id'] == $this::ADMIN_ID &&
+            @!$update['message']['from_id'] == $this::ADMIN_ID &&
             empty(
-                $update['message']['message'] &&
-                    !isset($update['message']['from_id'])
-            )
+                $update['message']['message'])
         ) {
             return;
         }
