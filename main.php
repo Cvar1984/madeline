@@ -30,7 +30,7 @@ class Mybot extends Command
                 ],
             ]);
         } catch (Exception | RPCErrorException $e) {
-            //$this->report($e);
+            $this->report($e);
         }
     }
     public function onUpdateNewMessage(array $update): \Generator
@@ -197,11 +197,11 @@ class Mybot extends Command
                 ]);
             }
         }
-        return $this->onUpdateEditMessage($update);
+        yield $this->onUpdateEditMessage($update);
     }
     public function onUpdateEditChannelMessage(array $update): \Generator
     {
-        return $this->onUpdateEditMessage($update);
+        yield $this->onUpdateEditMessage($update);
     }
     public function onUpdateEditMessage($update): \Generator
     {
