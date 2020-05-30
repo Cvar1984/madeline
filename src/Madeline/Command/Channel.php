@@ -15,7 +15,7 @@ trait Channel
         $query = $opt['query'];
         $cache = $this::STORAGE . '/' . sha1(time()) . '.jpg';
 
-        $imagespOption = [
+        $imagesOption = [
             'text' => $text,
             'query' => $query,
             'font' => 'FSEX300.ttf',
@@ -26,7 +26,7 @@ trait Channel
             ],
         ];
 
-        $text = BhsecTemplates::make($imagespOption);
+        $text = BhsecTemplates::make($imagesOption);
 
         yield $this->messages->sendMedia([
             'peer' => $peer,

@@ -3,7 +3,7 @@
 namespace Cvar1984\Madeline\Command;
 
 use danog\MadelineProto\FileCallback;
-use Bhsec\SimpleImage\Templates\BhsecTemplates;
+use Bhsec\SimpleImage\Templates\QuoteTemplates;
 
 trait SimpleImage
 {
@@ -16,10 +16,11 @@ trait SimpleImage
         $query = $opt['query'];
         $cache = $this::STORAGE . '/' . sha1(time()) . '.jpg';
 
-        $imagespOption = [
+        $imagesOption = [
             'text' => $text,
+            'watermark' => 'Anonymous',
             'query' => $query,
-            'font' => 'FSEX300.ttf',
+            'font' => 'Shadow Brush.ttf',
             'result' => [
                 'output' => $cache,
                 'mime' => 'image/jpeg',
@@ -27,7 +28,10 @@ trait SimpleImage
             ],
         ];
 
-        $text = BhsecTemplates::make($imagespOption);
+        $text = json_encode(
+            QuoteTemplates::make($imagesOption),
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+        );
         yield $this->messages->sendMedia([
             'peer' => $peer,
             'reply_to_msg_id' => $chatId,

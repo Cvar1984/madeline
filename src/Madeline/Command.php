@@ -9,7 +9,7 @@ abstract class Command extends EventHandler
     public const ADMIN_PEER = '@Cvar1984';
     public const CHANNEL_PEER = 'BHSecFortune';
     public const STORAGE = './assets';
-    public const WAIT = 10000;
+    public const WAIT = 500000;
 
     use \Cvar1984\Madeline\Command\SimpleImage;
     use \Cvar1984\Madeline\Command\Urban;
@@ -19,4 +19,5 @@ abstract class Command extends EventHandler
     use \Cvar1984\Madeline\Command\EvalTrait;
     use \Cvar1984\Madeline\Command\Channel;
     use \Cvar1984\Madeline\Command\Fortune;
+    use \Cvar1984\Madeline\Command\Checker;
 }

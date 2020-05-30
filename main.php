@@ -12,9 +12,13 @@ use Cvar1984\Madeline\Command;
 
 class Mybot extends Command
 {
-    public function onAny($update)
+    public function onAny($update): \Generator
     {
-        Logger::log($update, Logger::ULTRA_VERBOSE);
+        yield Logger::log($update, Logger::VERBOSE);
+    }
+    public function onUpdateDeleteMessages(array $update): \Generator
+    {
+        yield $this->onUpdateDeleteChannelMessages($update);
     }
     public function onUpdateDeleteChannelMessages(array $update): \Generator
     {
@@ -26,12 +30,8 @@ class Mybot extends Command
                 ],
             ]);
         } catch (Exception | RPCErrorException $e) {
-            $this->report($e);
+            //$this->report($e);
         }
-    }
-    public function onUpdateNewChannelMessage(array $update): \Generator
-    {
-        return $this->onUpdateNewMessage($update);
     }
     public function onUpdateNewMessage(array $update): \Generator
     {
@@ -45,16 +45,20 @@ class Mybot extends Command
         } catch (Exception | RPCErrorException $e) {
             $this->report($e);
         }
-        if (empty($update['message']['message'])) {
+
+        yield $this->onUpdateNewChannelMessage($update);
+    }
+    public function onUpdateNewChannelMessage(array $update): \Generator
+    {
+        if (
+            !isset($update['message']['message']) &&
+            !isset($update['message']['from_id']) &&
+            !isset($update['message']['id'])
+        ) {
             return; // catch command only not media
         }
 
         $message = $update['message']['message'];
-
-        if (!isset($update['message']['from_id'])) {
-            return; // only user with id
-        }
-
         $fromId = $update['message']['from_id'];
         $chatId = $update['message']['id'];
         $peer = $update;
@@ -66,6 +70,7 @@ class Mybot extends Command
                 }
 
                 $query = $match[1];
+
                 yield $this->urban([
                     'message' => $query,
                     'peer' => $peer,
@@ -79,8 +84,28 @@ class Mybot extends Command
                 ]);
                 // yield $thiz->report($e);
             }
+        } elseif (preg_match('/^\/checker/i', $message)) {
+            try {
+                if (!preg_match('/\s"(.*\d)"/', $message, $match)) {
+                    throw new Exception('Not a valid cc');
+                }
+
+                $text = $match[1];
+
+                yield $this->isValidCreditCard([
+                    'peer' => $peer,
+                    'id' => $chatId,
+                    'message' => $text,
+                ]);
+            } catch (Exception $e) {
+                yield $this->messages->sendMessage([
+                    'peer' => $peer,
+                    'reply_to_msg_id' => $chatId,
+                    'message' => $e->getMessage(),
+                ]);
+            }
         } elseif (preg_match('/^\/simpleimage/i', $message)) {
-            preg_match('/\s"(.+)"/i', $message, $match)
+            preg_match('/\s"(.+)"/Usi', $message, $match)
                 ? ($text = $match[1])
                 : ($text = Fortune::make());
             yield $this->simpleImage([
@@ -98,7 +123,7 @@ class Mybot extends Command
         } elseif ($fromId == $this::ADMIN_ID) {
             // admin commmand
             if (preg_match('/^\/animate/', $message)) {
-                preg_match('/\s"(.+)"/i', $message, $match)
+                preg_match('/\s"(.+)"/Usi', $message, $match)
                     ? ($text = $match[1])
                     : ($text = Fortune::make());
                 yield $this->animate([
@@ -130,7 +155,7 @@ class Mybot extends Command
                 }
             } elseif (preg_match('/^\/upfile/i', $message)) {
                 try {
-                    preg_match('/\s"(.+)"/', $message, $match)
+                    preg_match('/\s"(.*)"/Usi', $message, $match)
                         ? ($file = $match[1])
                         : ($file = $this::STORAGE . '/default.jpg');
 
@@ -149,7 +174,7 @@ class Mybot extends Command
                 }
             } elseif (preg_match('/^\/channel/i', $message)) {
                 try {
-                    preg_match('/\s"(.+)"/i', $message, $match)
+                    preg_match('/\s"(.+)"/Usi', $message, $match)
                         ? ($text = $match[1])
                         : ($text = Fortune::make());
 
@@ -180,11 +205,11 @@ class Mybot extends Command
     }
     public function onUpdateEditMessage($update): \Generator
     {
-        if (empty($update['message']['message'])) {
-            return;
-        } elseif (!isset($update['message']['from_id'])) {
-            return; // only user with id
-        } elseif (!$update['message']['from_id'] == $this::ADMIN_ID) {
+        if (
+            @!$update['message']['from_id'] == $this::ADMIN_ID &&
+            empty(
+                $update['message']['message'])
+        ) {
             return;
         }
 

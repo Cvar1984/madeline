@@ -15,8 +15,9 @@
     "ext-mbstring": "*",
     "ext-gd" : "*",
     "danog/madelineproto": "^5.1",
-    "bhsec/simpleimage": "dev-master",
-    "mdwheele/fortune": "dev-master"
+    "bhsec/simpleimage": "^0.0",
+    "mdwheele/fortune": "dev-master",
+    "inacho/php-credit-card-validator": "^1.0"
   },
   "autoload": {
     "psr-4": {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "be13cbf80707ab9cb794e65ef289cf54",
+    "content-hash": "23c2c2c986a781b08aab343063f05792",
     "packages": [
         {
             "name": "amphp/amp",
@@ -1008,22 +1008,24 @@
         },
         {
             "name": "bhsec/simpleimage",
-            "version": "dev-master",
+            "version": "0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/BlackHoleSecurity/simpleimage.git",
-                "reference": "834fe736474bdc384e1368acf0219adab8ea336c"
+                "reference": "5ef2d4925411d99ab86b36fd60809b1b080401fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BlackHoleSecurity/simpleimage/zipball/834fe736474bdc384e1368acf0219adab8ea336c",
-                "reference": "834fe736474bdc384e1368acf0219adab8ea336c",
+                "url": "https://api.github.com/repos/BlackHoleSecurity/simpleimage/zipball/5ef2d4925411d99ab86b36fd60809b1b080401fe",
+                "reference": "5ef2d4925411d99ab86b36fd60809b1b080401fe",
                 "shasum": ""
             },
             "require": {
                 "claviska/simpleimage": "^3.3",
                 "ext-gd": "*",
                 "ext-mbstring": "*",
+                "mdwheele/fortune": "dev-master",
+                "pimple/pimple": "^3.3",
                 "unsplash/unsplash": "^2.5"
             },
             "type": "library",
@@ -1043,7 +1045,7 @@
                 }
             ],
             "description": "fanspage images generator using unsplash wrapper",
-            "time": "2020-05-25T15:53:39+00:00"
+            "time": "2020-05-27T00:27:28+00:00"
         },
         {
             "name": "claviska/simpleimage",
@@ -1701,16 +1703,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.5.3",
+            "version": "6.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "aab4ebd862aa7d04f01a4b51849d657db56d882e"
+                "reference": "a4a1b6930528a8f7ee03518e6442ec7a44155d9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/aab4ebd862aa7d04f01a4b51849d657db56d882e",
-                "reference": "aab4ebd862aa7d04f01a4b51849d657db56d882e",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/a4a1b6930528a8f7ee03518e6442ec7a44155d9d",
+                "reference": "a4a1b6930528a8f7ee03518e6442ec7a44155d9d",
                 "shasum": ""
             },
             "require": {
@@ -1718,7 +1720,7 @@
                 "guzzlehttp/promises": "^1.0",
                 "guzzlehttp/psr7": "^1.6.1",
                 "php": ">=5.5",
-                "symfony/polyfill-intl-idn": "^1.11"
+                "symfony/polyfill-intl-idn": "1.17.0"
             },
             "require-dev": {
                 "ext-curl": "*",
@@ -1764,7 +1766,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2020-04-18T10:38:46+00:00"
+            "time": "2020-05-25T19:35:05+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -1939,6 +1941,57 @@
                 "single sign on"
             ],
             "time": "2017-12-14T13:08:42+00:00"
+        },
+        {
+            "name": "inacho/php-credit-card-validator",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/inacho/php-credit-card-validator.git",
+                "reference": "e71ea730a9059ea75cc6d94e7c42993eacf44dc1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/inacho/php-credit-card-validator/zipball/e71ea730a9059ea75cc6d94e7c42993eacf44dc1",
+                "reference": "e71ea730a9059ea75cc6d94e7c42993eacf44dc1",
+                "shasum": ""
+            },
+            "require": {
+                "lib-pcre": ">=7.3",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Inacho\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ignacio de Tomás",
+                    "email": "nacho@inacho.es"
+                }
+            ],
+            "description": "Validates popular debit and credit cards numbers against regular expressions and Luhn algorithm. Also validates the CVC and the expiration date",
+            "keywords": [
+                "card",
+                "cards",
+                "credit",
+                "creditcard",
+                "creditcards",
+                "cvc",
+                "debit",
+                "laravel",
+                "validator"
+            ],
+            "time": "2015-07-03T19:13:29+00:00"
         },
         {
             "name": "kelunik/certificate",
@@ -2481,6 +2534,105 @@
             "time": "2019-01-03T20:59:08+00:00"
         },
         {
+            "name": "pimple/pimple",
+            "version": "v3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/silexphp/Pimple.git",
+                "reference": "e55d12f9d6a0e7f9c85992b73df1267f46279930"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/silexphp/Pimple/zipball/e55d12f9d6a0e7f9c85992b73df1267f46279930",
+                "reference": "e55d12f9d6a0e7f9c85992b73df1267f46279930",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2.5",
+                "psr/container": "^1.0"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "^3.4|^4.4|^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Pimple": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Pimple, a simple Dependency Injection Container",
+            "homepage": "https://pimple.symfony.com",
+            "keywords": [
+                "container",
+                "dependency injection"
+            ],
+            "time": "2020-03-03T09:12:48+00:00"
+        },
+        {
+            "name": "psr/container",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/container.git",
+                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Container\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common Container Interface (PHP FIG PSR-11)",
+            "homepage": "https://github.com/php-fig/container",
+            "keywords": [
+                "PSR-11",
+                "container",
+                "container-interface",
+                "container-interop",
+                "psr"
+            ],
+            "time": "2017-02-14T16:28:37+00:00"
+        },
+        {
             "name": "psr/http-message",
             "version": "1.0.1",
             "source": {
@@ -2897,7 +3049,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "bhsec/simpleimage": 20,
         "mdwheele/fortune": 20
     },
     "prefer-stable": false,
