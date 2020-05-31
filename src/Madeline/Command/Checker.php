@@ -14,12 +14,14 @@ trait Checker
 
         if ($card['valid']) {
             $text = <<<VALID
-**LIVE** : *{$card['number']}*
-**TYPE** : *{$card['type']}*
+**CARD** : `{$card['number']}`
+**TYPE** : {$card['type']}
+**STATUS** : *Unknown*
+**BALANCE** : *Unknown*
 VALID;
         } else {
             $text = <<<INVALID
-**DIE** : *{$cc}*
+**CARD** : *{$cc}*
 *this card is invalid*
 INVALID;
         }

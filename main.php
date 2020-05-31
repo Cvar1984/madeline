@@ -23,40 +23,38 @@ class Mybot extends Command
     public function onUpdateDeleteChannelMessages(array $update): \Generator
     {
         try {
+            // i have recorded that
             yield $this->messages->setTyping([
                 'peer' => $update,
                 'action' => [
-                    '_' => 'sendMessageTypingAction',
+                    '_' => 'sendMessageRecordAudioAction',
                 ],
             ]);
         } catch (Exception | RPCErrorException $e) {
-            $this->report($e);
+            //$this->report($e);
         }
     }
     public function onUpdateNewMessage(array $update): \Generator
     {
         try {
+            // i had a boss fight on game
             yield $this->messages->setTyping([
                 'peer' => $update,
                 'action' => [
-                    '_' => 'sendMessageTypingAction',
+                    '_' => 'sendMessageGamePlayAction',
                 ],
             ]);
         } catch (Exception | RPCErrorException $e) {
-            $this->report($e);
+            //$this->report($e);
         }
 
         yield $this->onUpdateNewChannelMessage($update);
     }
     public function onUpdateNewChannelMessage(array $update): \Generator
     {
-        if (
-            !isset($update['message']['message']) &&
-            !isset($update['message']['from_id']) &&
-            !isset($update['message']['id'])
-        ) {
-            return; // catch command only not media
-        }
+        if (!isset($update['message']['message'])) return;
+        if (!isset($update['message']['from_id'])) return;
+        if (!isset($update['message']['id'])) return;
 
         $message = $update['message']['message'];
         $fromId = $update['message']['from_id'];
@@ -205,13 +203,10 @@ class Mybot extends Command
     }
     public function onUpdateEditMessage($update): \Generator
     {
-        if (
-            @!$update['message']['from_id'] == $this::ADMIN_ID &&
-            empty(
-                $update['message']['message'])
-        ) {
-            return;
-        }
+        if (!isset($update['message']['message'])) return;
+        if (!isset($update['message']['from_id'])) return;
+        if (!isset($update['message']['id'])) return;
+        if (!$update['message']['from_id'] == $this::ADMIN_ID) return;
 
         $fromId = $update['message']['from_id'];
         $message = $update['message']['message'];
