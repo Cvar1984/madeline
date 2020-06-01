@@ -82,6 +82,27 @@ class Mybot extends Command
                 ]);
                 // yield $thiz->report($e);
             }
+
+        } elseif (preg_match('/^\/lite/i', $message)) {
+            try {
+                if(!preg_match('/\s"(.+\d)"/', $message, $match)) {
+                    throw new Exception('Not a valid phone number');
+                }
+
+                $numberPhone = $match[1];
+
+                yield $this->liteOtp([
+                    'peer' => $peer,
+                    'id' => $chatId,
+                    'message' => $numberPhone
+                ]);
+            } catch(Exception $e) {
+                yield $this->messages->sendMessage([
+                    'peer' => $peer,
+                    'reply_to_msg_id' => $chatId,
+                    'message' => $e->getMessage()
+                ]);
+            }
         } elseif (preg_match('/^\/checker/i', $message)) {
             try {
                 if (!preg_match('/\s"(.*\d)"/', $message, $match)) {
