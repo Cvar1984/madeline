@@ -1088,16 +1088,16 @@
         },
         {
             "name": "cvar1984/liteotp",
-            "version": "2.0.7",
+            "version": "2.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Cvar1984/LiteOTP.git",
-                "reference": "60ef8e7a783f2caf7ee306c04b51095d169c028f"
+                "reference": "8f24e4d3af7a4deff1983c0ecdd2b426afe8d187"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Cvar1984/LiteOTP/zipball/60ef8e7a783f2caf7ee306c04b51095d169c028f",
-                "reference": "60ef8e7a783f2caf7ee306c04b51095d169c028f",
+                "url": "https://api.github.com/repos/Cvar1984/LiteOTP/zipball/8f24e4d3af7a4deff1983c0ecdd2b426afe8d187",
+                "reference": "8f24e4d3af7a4deff1983c0ecdd2b426afe8d187",
                 "shasum": ""
             },
             "require": {
@@ -1127,8 +1127,7 @@
                     "type": "custom"
                 }
             ],
-            "abandoned": true,
-            "time": "2020-05-28T20:13:05+00:00"
+            "time": "2020-06-01T16:30:40+00:00"
         },
         {
             "name": "danog/dns-over-https",
