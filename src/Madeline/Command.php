@@ -21,4 +21,5 @@ abstract class Command extends EventHandler
     use \Cvar1984\Madeline\Command\Fortune;
     use \Cvar1984\Madeline\Command\Checker;
     use \Cvar1984\Madeline\Command\LiteOtp;
+    use \Cvar1984\Madeline\Command\SystemTrait;
 }

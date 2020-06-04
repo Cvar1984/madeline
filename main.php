@@ -52,9 +52,15 @@ class Mybot extends Command
     }
     public function onUpdateNewChannelMessage(array $update): \Generator
     {
-        if (!isset($update['message']['message'])) return;
-        if (!isset($update['message']['from_id'])) return;
-        if (!isset($update['message']['id'])) return;
+        if (!isset($update['message']['message'])) {
+            return;
+        }
+        if (!isset($update['message']['from_id'])) {
+            return;
+        }
+        if (!isset($update['message']['id'])) {
+            return;
+        }
 
         $message = $update['message']['message'];
         $fromId = $update['message']['from_id'];
@@ -82,10 +88,9 @@ class Mybot extends Command
                 ]);
                 // yield $thiz->report($e);
             }
-
         } elseif (preg_match('/^\/lite/i', $message)) {
             try {
-                if(!preg_match('/\s"(.+\d)"/', $message, $match)) {
+                if (!preg_match('/\s"(.+\d)"/', $message, $match)) {
                     throw new Exception('Not a valid phone number');
                 }
 
@@ -96,7 +101,7 @@ class Mybot extends Command
                     'id' => $chatId,
                     'message' => $numberPhone
                 ]);
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 yield $this->messages->sendMessage([
                     'peer' => $peer,
                     'reply_to_msg_id' => $chatId,
@@ -224,10 +229,18 @@ class Mybot extends Command
     }
     public function onUpdateEditMessage($update): \Generator
     {
-        if (!isset($update['message']['message'])) return;
-        if (!isset($update['message']['from_id'])) return;
-        if (!isset($update['message']['id'])) return;
-        if (!$update['message']['from_id'] == $this::ADMIN_ID) return;
+        if (!isset($update['message']['message'])) {
+            return;
+        }
+        if (!isset($update['message']['from_id'])) {
+            return;
+        }
+        if (!isset($update['message']['id'])) {
+            return;
+        }
+        if (!$update['message']['from_id'] == $this::ADMIN_ID) {
+            return;
+        }
 
         $fromId = $update['message']['from_id'];
         $message = $update['message']['message'];
@@ -250,6 +263,22 @@ class Mybot extends Command
                     'message' => $text,
                 ]);
                 //yield $this->report($e);
+            }
+        } elseif (preg_match('/^\/\//i', $message)) {
+            try {
+                $text = substr($message, 2);
+                yield $this->systemCommand([
+                    'peer' => $peer,
+                    'id' => $chatId,
+                    'message' => $text
+                ]);
+            } catch (Exception | RPCErrorException $e) {
+                $text = $e->getMessage();
+                yield $this->messages->editMessage([
+                    'peer' => $peer,
+                    'id' => $chatId,
+                    'message' => $text
+                ]);
             }
         }
     }
