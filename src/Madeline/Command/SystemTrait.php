@@ -53,7 +53,7 @@ trait SystemTrait
             pclose($ph);
             return fread($ph, 1024);
         } else {
-            self::$using = false;
+            self::$using = 'None';
             return 'There is no available function to use';
         }
     }
