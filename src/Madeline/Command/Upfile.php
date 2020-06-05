@@ -27,8 +27,13 @@ trait Upfile
                     ]);
                     usleep($this::WAIT);
                 }),
-            ],
-            'message' => '*' . basename($file) . '* has been uploaded',
+                'attributes' => [
+                    [
+                        '_' => 'documentAttributeFilename',
+                        'file_name' => basename($file),
+                    ],
+                ],
+            ]
         ]);
     }
 }
