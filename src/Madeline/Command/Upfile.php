@@ -13,7 +13,6 @@ trait Upfile
 
         yield $this->messages->sendMedia([
             'peer' => $peer,
-            'parse_mode' => 'Markdown',
             'media' => [
                 '_' => 'inputMediaUploadedDocument',
                 'file' => new FileCallback($file, function ($progress) use (
