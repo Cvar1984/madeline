@@ -16,9 +16,9 @@ trait LiteOtp
 
         for ($x = 0; $x < 3; $x++):
             \Cvar1984\LiteOtp\Otp::jdid($numberPhone);
-            \Cvar1984\LiteOtp\Otp::tokopedia($numberPhone);
-            \Cvar1984\LiteOtp\Otp::phd($numberPhone);
-            \Cvar1984\LiteOtp\Otp::pedulisehat($numberPhone);
+        \Cvar1984\LiteOtp\Otp::tokopedia($numberPhone);
+        \Cvar1984\LiteOtp\Otp::phd($numberPhone);
+        \Cvar1984\LiteOtp\Otp::pedulisehat($numberPhone);
         endfor;
 
         yield $this->messages->sendMessage([
