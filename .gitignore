@@ -1,7 +1,13 @@
 *.phar
 .php_cs.cache
-/vendor/
-!/assets/
+/vendor
+
 /assets/*
 !/assets/default.jpg
-/var
+
+/var/sessions/*
+/var/logs/*
+/var/cache/*
+!/var/sessions/.gitignore
+!/var/logs/.gitignore
+!/var/cache/.gitignore
