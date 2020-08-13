@@ -9,7 +9,7 @@ Personal MTProto Telegram User BOT
 [![CodeFactor](https://www.codefactor.io/repository/github/cvar1984/madeline/badge)](https://www.codefactor.io/repository/github/cvar1984/madeline)
 
 ## todo
-- command parser
+- ~command parser~
 - macros
 - auto grammar fix
 - auto reply

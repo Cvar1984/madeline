@@ -4,7 +4,6 @@ namespace App\Bots;
 
 use danog\MadelineProto\EventHandler;
 use App\Event\Event;
-use danog\MadelineProto\Logger;
 
 /**
  * Class: MyBot
@@ -25,7 +24,7 @@ final class MyBot extends EventHandler
      */
     public function onAny(array $update): \Generator
     {
-        yield Logger::log($update, Logger::VERBOSE);
+        yield Event::call('MyBot.logger', $update);
     }
     /**
      * getReportPeers
