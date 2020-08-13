@@ -7,22 +7,21 @@
   "authors": [
     {
       "name": "Cvar1984",
-      "email": "gedzsarjuncomuniti@gmail.com"
+      "email": "gedzsarjuncomuniti@gmail.com",
+      "role": "developer"
     }
   ],
   "require": {
-    "ext-curl": "*",
-    "ext-mbstring": "*",
-    "ext-gd" : "*",
-    "danog/madelineproto": "^5.1",
-    "bhsec/simpleimage": "^0.0",
-    "mdwheele/fortune": "dev-master",
-    "inacho/php-credit-card-validator": "^1.0",
-    "cvar1984/liteotp": "^2.0"
+    "danog/madelineproto": "^5.1"
   },
   "autoload": {
     "psr-4": {
-      "Cvar1984\\": "src/"
-    }
+      "Cvar1984\\": "src/",
+      "App\\": "src/"
+    },
+    "files": [
+      "config/settings.php",
+      "config/command.php"
+    ]
   }
 }

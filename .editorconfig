@@ -10,12 +10,21 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 
-[*.json]
-indent_style = space
-indent_size = 2
-
-[*.{php, js, html, twig}]
+[*.{php, py, cpp, cc, hpp, hh, c, h}]
 charset = utf-8
 trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
+
+[*.{js, html, css, twig, json, yaml}]
+charset = utf-8
+indent_style = space
+indent_size = 2
+end_of_line = lf
+trim_trailing_whitespace = true
+
+[Makefile]
+indent_style = tab
+
+[*.md]
+trim_trailing_whitespace = false
