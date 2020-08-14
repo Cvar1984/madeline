@@ -15,20 +15,19 @@ function array_keys_exists(array $keys, $array)
         : $array;
 }
 
-Event::register('MyBot.test', function ($update, $madeline) {
+Event::register('MyBot.say', function ($update, $madeline) {
     $params = CommandParser::parseString($update['message']['message']);
-    /* var_dump($params); */
-    if (array_keys_exists(['test'], $params)) {
+    if (isset($params['say']['text'])) {
+        $message = CommandParser::parseMacro($params['say']['text']);
+        CommandParser::refreshMacro();
+
         yield $madeline->messages->editMessage([
             'peer' => $update,
             'id' => $update['message']['id'],
-            'message' => json_encode($params, JSON_PRETTY_PRINT),
+            'message' => $message,
         ]);
     }
 });
 Event::register('MyBot.logger', function ($update) {
     yield Logger::log($update, Logger::VERBOSE);
-});
-Event::register('MyBot.macro', function ($update) {
-    return preg_replace($update['message']['message']);
 });

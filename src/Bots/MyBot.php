@@ -47,7 +47,7 @@ final class MyBot extends EventHandler
             return;
         }
         if ($update['message']['from_id'] == self::ADMIN_ID) {
-            yield Event::call('MyBot.test', [$update, $this]);
+            yield Event::call('MyBot.say', [$update, $this]);
         }
         /* }}} */
     }

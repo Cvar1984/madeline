@@ -10,7 +10,7 @@ Personal MTProto Telegram User BOT
 
 ## todo
 - ~command parser~
-- macros
+- ~macros~
 - auto grammar fix
 - auto reply
 - credit card live checker

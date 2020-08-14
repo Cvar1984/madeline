@@ -13,17 +13,24 @@ class CommandParser
      *
      * @var string
      */
-    public static $pattern = '~(?:^,([^.]+)|\G(?!^))\.(?= )(?: (\S+))? (.+?(?=\. |$))~';
+    private static $pattern = '~(?:^,([^.]+)|\G(?!^))\.(?= )(?: (\S+))? (.+?(?=\. |$))~';
 
     /**
-     * parserString
+     * macros
      *
-     * @param string $string
+     * @var mixed
+     */
+    public static $macros = [];
+
+    /**
+     * parseString
+     *
+     * @param string $command
      * @return array|string
      */
-    public static function parseString(string $string)
+    public static function parseString(string $command)
     {
-        if (preg_match_all(self::$pattern, $string, $out)) {
+        if (preg_match_all(self::$pattern, $command, $out)) {
             foreach ($out[2] as $index => $subKey) {
                 if (strlen($subKey)) {
                     $result[$out[1][0]][$subKey] = $out[3][$index];
@@ -32,6 +39,28 @@ class CommandParser
                 }
             }
         }
-        return isset($result) ? $result : $string;
+        return isset($result) ? $result : $command;
+    }
+    public static function refreshMacro()
+    {
+        self::$macros = [
+            '/%(randInt|rand_int)%/' => rand(),
+            '/%(fortune|rand_str)%/' => \Cvar1984\Fortune\Fortune::make(),
+        ];
+    }
+
+    /**
+     * parseMacro
+     *
+     * @param string $command
+     */
+    public static function parseMacro(string $command): string
+    {
+        self::refreshMacro();
+        return preg_replace(
+            array_keys(self::$macros),
+            array_values(self::$macros),
+            $command
+        );
     }
 }
