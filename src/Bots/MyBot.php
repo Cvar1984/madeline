@@ -14,6 +14,7 @@ use App\Event\Event;
 final class MyBot extends EventHandler
 {
     public const ADMIN_PEER = '@Cvar1984';
+    public const ADMIN_ID = '905361440';
     /* public function onStart() */
     /* { */
     /* } */
@@ -24,7 +25,7 @@ final class MyBot extends EventHandler
      */
     public function onAny(array $update): \Generator
     {
-        yield Event::call('MyBot.logger', $update);
+        yield Event::call('MyBot.logger', [$update]);
     }
     /**
      * getReportPeers
@@ -39,13 +40,21 @@ final class MyBot extends EventHandler
      *
      * @param array $update
      */
-    public function onUpdateNewMessage(array $update): \Generator
+    public function onUpdateNewMessage(array $update)
     {
-        yield Event::call('MyBot.test', [$update, $this]);
+        /* {{{ admin command */
+        if (!isset($update['message']['from_id'])) {
+            return;
+        }
+        if ($update['message']['from_id'] == self::ADMIN_ID) {
+            yield Event::call('MyBot.test', [$update, $this]);
+        }
+        /* }}} */
     }
-    /* public function onUpdateNewChannelMessage(array $update) */
-    /* { */
-    /* } */
+    public function onUpdateNewChannelMessage(array $update)
+    {
+        yield $this->onUpdateNewMessage($update);
+    }
     /* public function onUpdateDeleteMessages(array $update) */
     /* { */
     /* } */

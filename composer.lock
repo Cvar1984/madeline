@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38d6d640dc7bf3de7dac1a799a0d63e9",
+    "content-hash": "8daf37c1445b145881b5f894c4fc55a7",
     "packages": [
         {
             "name": "amphp/amp",
@@ -2082,54 +2082,6 @@
                 "response"
             ],
             "time": "2016-08-06T14:39:51+00:00"
-        },
-        {
-            "name": "samejack/php-argv",
-            "version": "1.0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/samejack/php-argv.git",
-                "reference": "0551f0f7fd38a5e9dcb316d5cc9028cdd62b21ac"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/samejack/php-argv/zipball/0551f0f7fd38a5e9dcb316d5cc9028cdd62b21ac",
-                "reference": "0551f0f7fd38a5e9dcb316d5cc9028cdd62b21ac",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "php-coveralls/php-coveralls": "*@stable",
-                "phpunit/phpunit": "~4.8|~5.7",
-                "squizlabs/php_codesniffer": "*@stable"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "samejack\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "SJ",
-                    "email": "sj@toright.com",
-                    "homepage": "http://blog.toright.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "PHP CLI arguments parse.",
-            "homepage": "https://github.com/samejack/php-argv",
-            "keywords": [
-                "cli",
-                "php"
-            ],
-            "time": "2020-07-15T12:28:03+00:00"
         },
         {
             "name": "tivie/htaccess-parser",

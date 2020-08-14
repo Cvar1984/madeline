@@ -12,8 +12,7 @@
     }
   ],
   "require": {
-    "danog/madelineproto": "^5.1",
-    "samejack/php-argv": "^1.0"
+    "danog/madelineproto": "^5.1"
   },
   "autoload": {
     "psr-4": {
@@ -24,5 +23,9 @@
       "config/settings.php",
       "config/command.php"
     ]
+  },
+  "scripts": {
+      "cache:clean": "find ./var/cache -type f -not -name .gitignore -delete",
+      "logs:clean": "find ./var/logs -type f -not -name .gitignore -delete"
   }
 }
