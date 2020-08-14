@@ -56,7 +56,9 @@ class CommandParser
      */
     public static function parseMacro(string $command): string
     {
-        self::refreshMacro();
+        if (!self::$macros) {
+            self::refreshMacro();
+        }
         return preg_replace(
             array_keys(self::$macros),
             array_values(self::$macros),
