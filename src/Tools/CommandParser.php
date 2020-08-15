@@ -13,7 +13,8 @@ class CommandParser
      *
      * @var string
      */
-    private static $pattern = '~(?:^,([^.]+)|\G(?!^))\.(?= )(?: (\S+))? (.+?(?=\. |$))~';
+    private static $pattern = '~(?:^\/([^.]+)|\G(?!^)),,(?= )(?: (\S+))? (.+?(?=,, |$))~';
+    /* /myCommand,, color black,, text hello, world.,, size 20px */
 
     /**
      * macros
