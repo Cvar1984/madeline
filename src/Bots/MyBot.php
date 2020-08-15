@@ -50,10 +50,21 @@ final class MyBot extends EventHandler
             yield Event::call('MyBot.say', [$update, $this]);
         }
         /* }}} */
+
+        /* {{{ user command */
+        Event::call('MyBot.action.playing', [$update, $this]);
+        /* }}} */
     }
     public function onUpdateNewChannelMessage(array $update)
     {
-        yield $this->onUpdateNewMessage($update);
+        /* {{{ admin command */
+        if (!isset($update['message']['from_id'])) {
+            return;
+        }
+        if ($update['message']['from_id'] == self::ADMIN_ID) {
+            yield Event::call('MyBot.say', [$update, $this]);
+        }
+        /* }}} */
     }
     /* public function onUpdateDeleteMessages(array $update) */
     /* { */
@@ -67,9 +78,11 @@ final class MyBot extends EventHandler
     /* public function onUpdateEditChannelMessage(array $update) */
     /* { */
     /* } */
-    /* public function onUpdateUserTyping() */
-    /* { */
-    /* } */
+    public function onUpdateUserTyping()
+    {
+        Event::call('MyBot.action.playing', [$update, $this]);
+    /* https://docs.madelineproto.xyz/API_docs/types/SendMessageAction.html */
+    }
     /* public function onUpdateChatUserTyping() */
     /* { */
     /* } */

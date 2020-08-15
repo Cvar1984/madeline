@@ -31,3 +31,11 @@ Event::register('MyBot.say', function ($update, $madeline) {
 Event::register('MyBot.logger', function ($update) {
     yield Logger::log($update, Logger::VERBOSE);
 });
+Event::register('MyBot.action.playing', function ($update, $madeline) {
+    $madeline->messages->setTyping([
+        'peer' => $update,
+        'action' => [
+            '_' => 'sendMessageGamePlayAction',
+        ]
+    ]);
+});
