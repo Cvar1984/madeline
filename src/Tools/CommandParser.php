@@ -33,9 +33,10 @@ class CommandParser
         if (preg_match_all(self::$pattern, $command, $out)) {
             foreach ($out[2] as $index => $subKey) {
                 if (strlen($subKey)) {
-                    $result[$out[1][0]][$subKey] = $out[3][$index];
+                    $result[lcfirst($out[1][0])][lcfirst($subKey)] =
+                        $out[3][$index];
                 } else {
-                    $result[$out[1][0]] = $out[3][$index];
+                    $result[lcfirst($out[1][0])] = $out[3][$index];
                 }
             }
         }
