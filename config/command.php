@@ -1,25 +1,20 @@
 <?php
 
 use App\Event\Event;
-use App\Tools\CommandParser;
+use App\Tools\{CommandParser, MacroParser};
 use danog\MadelineProto\Logger;
 
 /* $chatId = $update['message']['id']; */
 /* $message = $update['message']['message']; */
 /* $fromId = $update['message']['from_id']; */
-/* $peer = $update['message']['message']; */
-function array_keys_exists(array $keys, $array)
-{
-    return is_array($array)
-        ? !array_diff_key(array_flip($keys), $array)
-        : $array;
-}
+/* $peer = $update */
 
 Event::register('MyBot.say', function ($update, $madeline) {
     $params = CommandParser::parseString($update['message']['message']);
+    var_dump($params);
     if (isset($params['say']['text'])) {
-        $message = CommandParser::parseMacro($params['say']['text']);
-        CommandParser::refreshMacro();
+        $message = MacroParser::parseString($params['say']['text']);
+        MacroParser::refreshMacro();
 
         yield $madeline->messages->editMessage([
             'peer' => $update,

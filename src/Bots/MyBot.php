@@ -81,7 +81,7 @@ final class MyBot extends EventHandler
     public function onUpdateUserTyping()
     {
         Event::call('MyBot.action.playing', [$update, $this]);
-    /* https://docs.madelineproto.xyz/API_docs/types/SendMessageAction.html */
+        /* https://docs.madelineproto.xyz/API_docs/types/SendMessageAction.html */
     }
     /* public function onUpdateChatUserTyping() */
     /* { */
