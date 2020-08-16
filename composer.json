@@ -27,6 +27,7 @@
   },
   "scripts": {
       "cache:clean": "find ./var/cache -type f -not -name .gitignore -delete",
-      "logs:clean": "find ./var/logs -type f -not -name .gitignore -delete"
+      "logs:clean": "find ./var/logs -type f -not -name .gitignore -delete",
+      "assets:clean": "find ./assets -type f -not -name .gitignore -delete"
   }
 }
