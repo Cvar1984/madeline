@@ -1,11 +1,17 @@
-FROM debian:jessie
-
 MAINTAINER Cvar1984 <cvar1984@protonmail.com>
 
-# Install packages
-RUN apt-get update && apt-get install -y \
-php7.3 php7.3-mbstring php7.3-sqlite composer
+FROM php:7.4-cli
+
+RUN apt-get update &% apt-get upgrade -y 
+
+RUN pecl install redis-5.1.1 \
+    && pecl install xdebug-2.8.1 \
+    && docker-php-ext-enable redis xdebug
+
+RUN curl -sS https://getcomposer.org/installer |\
+php -- --install-dir=/usr/local/bin \
+--filename=composer
 
 RUN composer install
 
-CMD ["php7.3", "./my_bot.php"]
+CMD ["php", "./my_bot.php"]
