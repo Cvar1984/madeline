@@ -12,7 +12,7 @@
     }
   ],
   "require": {
-    "danog/madelineproto": "^5.1",
+    "danog/madelineproto": "^7",
     "cvar1984/fortune": "^1.0"
   },
   "autoload": {
@@ -29,5 +29,10 @@
       "cache:clean": "find ./var/cache -type f -not -name .gitignore -delete",
       "logs:clean": "find ./var/logs -type f -not -name .gitignore -delete",
       "assets:clean": "find ./assets -type f -not -name .gitignore -delete"
+  },
+  "config": {
+    "allow-plugins": {
+      "phabel/phabel": true
+    }
   }
 }
